@@ -3,6 +3,7 @@
 Este repositório usa **Specification-Driven Development (SDD)** para transformar documentos de requisitos em specs rastreáveis de frontend e backend, além de mockups HTML conceituais das funcionalidades de frontend.
 
 O detalhamento das regras operacionais está em [`AGENTS.md`](AGENTS.md).
+As diretrizes visuais e tokens de interface estão documentados em [`DESIGN.md`](DESIGN.MD).
 
 ## O que o agente produz
 
@@ -10,7 +11,7 @@ O detalhamento das regras operacionais está em [`AGENTS.md`](AGENTS.md).
 - Specs de frontend, focadas em jornadas, telas, estados e critérios de aceite de interface.
 - Specs de backend, focadas em regras de negócio, dados, segurança, integrações e operações.
 - Roadmaps e questões em aberto.
-- Mockups HTML das funcionalidades de frontend.
+- Mockups HTML das funcionalidades de frontend em conformidade com o Design System.
 
 > Esta etapa não implementa código de produção, banco de dados, APIs ou infraestrutura. As mockups são documentação visual e não implementações funcionais.
 
@@ -19,6 +20,7 @@ O detalhamento das regras operacionais está em [`AGENTS.md`](AGENTS.md).
 ```text
 /
 ├── AGENTS.md
+├── DESIGN.md
 ├── requirements/
 │   ├── main_requirements.md
 │   ├── template_webdesign.html
@@ -40,18 +42,21 @@ O detalhamento das regras operacionais está em [`AGENTS.md`](AGENTS.md).
 
 ## Fontes e precedência
 
-`requirements/main_requirements.md` é a fonte principal e mandatória. Os documentos em `requirements/artifacts/` complementam os requisitos; conflitos ou lacunas devem ser registrados em `specs/OPEN-QUESTIONS.md`.
+`requirements/main_requirements.md` é a fonte principal e mandatória de requisitos de negócio. Os documentos em `requirements/artifacts/` complementam os requisitos; conflitos ou lacunas devem ser registrados em `specs/OPEN-QUESTIONS.md`.
 
-O arquivo `requirements/template_webdesign.html` é a referência obrigatória para a estrutura e o visual das mockups. Ele não define regras de negócio e não deve ser alterado.
+Para o desenvolvimento visual das mockups:
+- `DESIGN.md` é o guia normativo do Design System (tokens de cores, tipografia Montserrat, elevação *near-flat*, componentes canônicos e utilitários PrimeFlex).
+- `requirements/template_webdesign.html` é o template obrigatório de referência para a estrutura de layout e casca (*shell*) da aplicação. Ele não define regras de negócio e não deve ser alterado.
 
 ## Navegação rápida
 
 | Item | Finalidade |
 |---|---|
 | [`AGENTS.md`](AGENTS.md) | Regras completas para o agente |
+| [`DESIGN.md`](DESIGN.MD) | Guia oficial do Design System (tokens, cores, tipografia e PrimeFlex) |
 | `requirements/main_requirements.md` | Requisitos mandatórios |
 | `requirements/artifacts/` | Documentos de apoio |
-| `requirements/template_webdesign.html` | Template visual das mockups |
+| `requirements/template_webdesign.html` | Template base de layout das mockups |
 | `specs/REQUIREMENTS-CATALOG.md` | Catálogo rastreável de requisitos |
 | `specs/OPEN-QUESTIONS.md` | Dúvidas, conflitos e decisões |
 | `specs/ROADMAP.md` | Planejamento global das funcionalidades |

@@ -6,7 +6,7 @@ Este repositório utiliza **Specification-Driven Development (SDD)**.
 
 Nesta etapa, a responsabilidade do agente é analisar os requisitos e os artefatos de apoio presentes em `requirements/` para criar especificações estruturadas, rastreáveis, verificáveis e separadas por contexto de implementação em `specs/frontend/` e `specs/backend/`.
 
-Após criar ou modificar as specs e os roadmaps aplicáveis, o agente deve gerar ou sincronizar as mockups HTML das funcionalidades de frontend. As mockups são artefatos derivados das specs e devem refletir a aplicação de forma coerente e consolidada.
+Após criar ou modificar as specs e os roadmaps aplicáveis, o agente deve gerar ou sincronizar as mockups HTML das funcionalidades de frontend. As mockups são artefatos derivados das specs e devem refletir a aplicação de forma coerente e consolidada, seguindo estritamente as diretrizes de layout e identidade visual definidas no template base `requirements/template_webdesign.html` e no guia de design system `DESIGN.MD`.
 
 O agente não deve implementar código de produção, criar banco de dados, criar APIs, configurar infraestrutura ou modificar sistemas externos nesta etapa. A criação de mockups HTML é permitida exclusivamente como documentação visual derivada das specs de frontend.
 
@@ -16,9 +16,9 @@ Seu escopo é exclusivamente:
 2. Identificar regras, restrições, dependências e lacunas.
 3. Catalogar os requisitos extraídos.
 4. Gerar specs de frontend e backend.
-5. Manter rastreabilidade entre requisitos, artefatos e specs.
+5. Manter rastreabilidade entre requisitos, artefatos, specs e mockups.
 6. Registrar dúvidas, conflitos e decisões pendentes.
-7. Gerar e manter mockups HTML derivadas das specs de frontend.
+7. Gerar e manter mockups HTML derivadas das specs de frontend e em conformidade com `DESIGN.MD`.
 
 ---
 
@@ -27,6 +27,7 @@ Seu escopo é exclusivamente:
 ```text
 /
 ├── AGENTS.md
+├── DESIGN.MD
 ├── requirements/
 │   ├── main_requirements.md
 │   ├── template_webdesign.html
@@ -58,7 +59,13 @@ Seu escopo é exclusivamente:
 
 ---
 
-## 3. Responsabilidade de cada diretório
+## 3. Responsabilidade de cada diretório e artefato
+
+### `DESIGN.MD`
+
+Este é o documento normativo do Design System do projeto.
+
+Ele documenta a linguagem visual, tokens de cores, escala tipográfica, regras de elevação, componentes canônicos e diretrizes práticas (*Do's and Don'ts*). O agente deve consultá-lo obrigatoriamente para assegurar que todas as mockups HTML sigam rigorosamente a mesma identidade visual e padrões de componentes do ecossistema da aplicação.
 
 ### `requirements/`
 
@@ -85,7 +92,7 @@ O agente deve sempre ler este arquivo antes de analisar qualquer artefato locali
 
 Este é o template obrigatório de referência estrutural e visual para as mockups HTML.
 
-O agente deve utilizá-lo como base ao criar ou atualizar arquivos de mockup. O template orienta estrutura de página, linguagem visual, componentes, navegação, estilos e recursos já presentes no projeto, mas não é fonte de requisitos de negócio.
+O agente deve utilizá-lo como base ao criar ou atualizar arquivos de mockup. O template orienta a estrutura do shell da página, cabeçalho, barra lateral, área de trabalho, estilos e recursos já presentes no projeto, mas não é fonte de requisitos de negócio.
 
 O arquivo deve ser preservado: o agente nunca pode alterá-lo, renomeá-lo, movê-lo ou excluí-lo. A mockup gerada deve derivar do template, sem substituir a referência original.
 
@@ -95,7 +102,7 @@ A stack visual padrão das mockups é:
 - PrimeFlex para grid, espaçamento, responsividade e utilitários de layout.
 - PrimeIcons para iconografia.
 
-Quando o template possuir recursos equivalentes já carregados ou definidos, o agente deve reaproveitá-los. O agente não deve introduzir uma biblioteca visual concorrente sem fonte ou decisão humana formal.
+Quando o template e o `DESIGN.MD` possuírem recursos equivalentes já carregados ou definidos, o agente deve reaproveitá-los integralmente. O agente não deve introduzir uma biblioteca visual concorrente sem fonte ou decisão humana formal.
 
 ### `requirements/artifacts/`
 
@@ -177,7 +184,11 @@ A prioridade das fontes deve obedecer à seguinte ordem:
 6. Roadmaps em `specs/`
 7. Mockups em `mockups/` e cópias `mockup.html` nas specs de frontend
 
-Para decisões visuais, `requirements/template_webdesign.html` é a referência obrigatória de estrutura e linguagem visual. Para comportamento de interface, a fonte é a spec de frontend associada. A mockup deve obedecer a ambas, sem criar regras funcionais novas.
+Para decisões visuais, de layout e de design system:
+- `requirements/template_webdesign.html` é a referência obrigatória de layout, estrutura e componentes base.
+- `DESIGN.MD` é a especificação obrigatória do Design System (tokens, tipografia, cores, superfícies e regras de consistência visual).
+- A spec de frontend associada é a fonte do comportamento e fluxo da interface.
+- A mockup deve obedecer a todas essas referências, sem criar regras funcionais novas.
 
 ### Regras de precedência
 
@@ -197,6 +208,7 @@ Para decisões visuais, `requirements/template_webdesign.html` é a referência 
 ### 5.1 Preservação dos documentos de origem
 
 - Nunca alterar, renomear, mover ou excluir arquivos em `requirements/`.
+- Nunca alterar `DESIGN.MD`.
 - Nunca alterar `requirements/main_requirements.md` ou `requirements/template_webdesign.html`.
 - Nunca alterar, renomear, mover ou excluir arquivos em `requirements/artifacts/`.
 - Nunca resumir ou reescrever um documento de origem no próprio arquivo.
@@ -240,15 +252,15 @@ Nunca preencher lacunas de negócio, segurança, dados, privacidade, autorizaç�
 - A mockup deve ser criada ou atualizada somente após a criação ou alteração das specs aplicáveis e a atualização dos roadmaps.
 - A geração de mockups é a última etapa de consolidação da sessão para funcionalidades de frontend afetadas.
 - Antes de gerar uma mockup, o agente deve revisar as specs de frontend já existentes e relevantes para preservar a visão integrada da aplicação, inclusive padrões de navegação e elementos compartilhados.
-- O agente deve usar `requirements/template_webdesign.html` como base obrigatória.
-- A representação visual deve utilizar PrimeReact, PrimeFlex e PrimeIcons como stack padrão, conforme disponível ou estruturado no template.
+- O agente deve utilizar obrigatoriamente `requirements/template_webdesign.html` como base estrutural e seguir as diretrizes visuais estabelecidas no `DESIGN.MD`.
+- A representação visual deve utilizar PrimeReact, PrimeFlex e PrimeIcons como stack padrão, conforme estruturado no template e no `DESIGN.MD`.
 - Toda página HTML de mockup de frontend deve apresentar, no topo da página e logo após a identificação da aplicação, uma tag de identificação com o texto exato `Mockup Conceitual`.
 - A tag `Mockup Conceitual` deve possuir fundo laranja claro e texto em laranja escuro, preservando contraste e legibilidade.
 - A identificação da aplicação deve permanecer visualmente anterior à tag; a tag não pode substituir o nome, logotipo ou identificação existente da aplicação no template.
 - O selo deve ser aplicado tanto no arquivo central em `mockups/{ID}-{slug}_mockup.html` quanto na cópia local `specs/frontend/{ID}-{slug}/mockup.html`.
 - Quando a mockup representar uma funcionalidade que tenha referências de navegação ou itens de menu para outras funcionalidades já mockadas, essas referências devem utilizar links HTML para os arquivos correspondentes em `mockups/`.
 - Os links de navegação entre mockups devem apontar somente para funcionalidades que possuam mockup criada. Referências a funcionalidades sem mockup devem permanecer sem link ou ser apresentadas como indisponíveis, sem inventar uma página de destino.
-- Os links devem ser relativos, funcionais quando a mockup é aberta a partir de `mockups/`, e preservar a estrutura e os padrões de navegação definidos no `requirements/template_webdesign.html`.
+- Os links devem ser relativos, funcionais quando a mockup é aberta a partir de `mockups/`, e preservar a estrutura e os padrões de navegação definidos no `requirements/template_webdesign.html` e `DESIGN.MD`.
 - Para cada mockup aplicável, criar ou atualizar `mockups/{ID}-{slug}_mockup.html` e sincronizar uma cópia idêntica em `specs/frontend/{ID}-{slug}/mockup.html`.
 - As duas cópias devem possuir o mesmo conteúdo após a geração ou atualização.
 - A mockup deve refletir apenas telas, jornadas, ações, informações, validações, estados e mensagens documentados na spec de frontend ou nas fontes de origem.
@@ -286,25 +298,6 @@ Cada requisito deve informar identificador estável, tipo, descrição normaliza
 
 O agente deve agrupar requisitos em funcionalidades coesas e avaliar, para cada uma, a necessidade de spec somente frontend, somente backend, ambas com o mesmo identificador, ou nenhuma spec em contexto não aplicável.
 
-Exemplo:
-
-```text
-Requisito: “Usuário deve consultar suas notificações e marcá-las como lidas.”
-
-Frontend:
-- Criar listagem de notificações.
-- Exibir estados de carregamento, vazio e erro.
-- Permitir interação para marcar como lida.
-- Exibir indicador de não lidas.
-
-Backend:
-- Disponibilizar consulta de notificações do usuário autenticado.
-- Garantir que o usuário acesse apenas suas próprias notificações.
-- Registrar a marcação como lida.
-- Garantir idempotência da operação.
-- Registrar auditoria ou logs, quando aplicável.
-```
-
 ### Etapa 6 — Criação das specs
 
 As specs devem seguir esta estrutura:
@@ -336,7 +329,7 @@ Esta etapa deve ocorrer após todas as specs e roadmaps impactados terem sido at
 
 1. Identificar todas as specs de frontend criadas ou modificadas na sessão.
 2. Revisar as funcionalidades frontend existentes e relevantes para preservar consistência global da aplicação.
-3. Ler `requirements/template_webdesign.html` como base estrutural e visual.
+3. Ler `requirements/template_webdesign.html` e `DESIGN.MD` como bases obrigatórias estruturais, de layout e de design system.
 4. Criar ou atualizar `mockups/{ID}-{slug}_mockup.html` para cada funcionalidade aplicável.
 5. Criar ou atualizar a cópia idêntica em `specs/frontend/{ID}-{slug}/mockup.html`.
 6. Registrar na spec o caminho, status e data da última sincronização da mockup.
@@ -374,9 +367,10 @@ Arquivo: `specs/REQUIREMENTS-CATALOG.md`
 
 | ID | Arquivo | Origem | Tipo | Data/versão | Prioridade | Observação |
 |---|---|---|---|---|---|---|
-| SRC-MAIN-001 | `requirements/main_requirements.md` | Principal | Requisitos mandatórios | 2026-08-13 | Mandatória | Fonte principal |
-| SRC-TPL-001 | `requirements/template_webdesign.html` | Template | Referência visual | — | Visual | Base obrigatória das mockups; não define requisito de negócio |
-| SRC-ART-001 | `requirements/artifacts/regras-de-negocio.md` | Artefato | Regras de negócio | 2026-08-12 | Complementar | Detalha fluxo |
+| SRC-MAIN-001 | `requirements/main_requirements.md` | Principal | Requisitos mandatórios | 2026-08-13 | Mandatória | Fonte principal de requisitos |
+| SRC-DS-001 | `DESIGN.MD` | Design System | Guia visual e tokens | — | Visual | Especificação oficial do Design System |
+| SRC-TPL-001 | `requirements/template_webdesign.html` | Template | Referência estrutural | — | Visual | Base obrigatória de layout das mockups |
+| SRC-ART-001 | `requirements/artifacts/regras-de-negocio.md` | Artefato | Regras de negócio | 2026-08-12 | Complementar | Detalha fluxo operacional |
 
 ## Requisitos catalogados
 
@@ -463,6 +457,7 @@ Arquivo: `specs/ROADMAP.md`
 
 - Última atualização: 2026-08-13
 - Fonte principal analisada: `requirements/main_requirements.md`
+- Design System analisado: `DESIGN.MD`
 - Template visual analisado: `requirements/template_webdesign.html`
 - Artefato atual em análise: `requirements/artifacts/regras-de-negocio.md`
 - Funcionalidade ativa: `0002-central-de-notificacoes`
@@ -530,6 +525,7 @@ specs/frontend/000X-nome-da-funcionalidade/spec.md
 - Última atualização:
 - Fonte principal: `requirements/main_requirements.md`
 - Artefatos complementares:
+- Design System: `DESIGN.MD`
 - Template visual: `requirements/template_webdesign.html`
 - Mockup central: `mockups/000X-nome-da-funcionalidade_mockup.html`
 - Cópia local da mockup: `specs/frontend/000X-nome-da-funcionalidade/mockup.html`
@@ -614,6 +610,7 @@ specs/frontend/000X-nome-da-funcionalidade/spec.md
 ## Mockup relacionada
 
 - Base obrigatória: `requirements/template_webdesign.html`.
+- Guia de Design System: `DESIGN.MD`.
 - Stack visual: PrimeReact, PrimeFlex e PrimeIcons.
 - Arquivo central: `mockups/000X-nome-da-funcionalidade_mockup.html`.
 - Cópia local: `mockup.html`.
@@ -632,7 +629,7 @@ specs/frontend/000X-nome-da-funcionalidade/spec.md
 | CA-FE-001 | [Usuário consegue realizar o fluxo principal] | UI-001, REQ-FUNC-XXX |
 | CA-FE-002 | [Interface apresenta estado vazio corretamente] | REQ-FUNC-XXX |
 | CA-FE-003 | [Interface trata falha de acesso adequadamente] | REQ-SEC-XXX |
-| CA-FE-004 | A mockup está sincronizada nas localizações central e local e representa somente comportamentos documentados | UI-001, CA-FE-001 |
+| CA-FE-004 | A mockup está sincronizada nas localizações central e local e segue as diretrizes do DESIGN.MD e do template | UI-001, CA-FE-001 |
 
 ## Questões em aberto
 
@@ -809,8 +806,9 @@ Quando uma funcionalidade possuir specs nos dois contextos, o agente deve:
 11. Garantir que a mockup central e sua cópia local estejam sincronizadas.
 12. Reavaliar a spec frontend e a mockup quando uma alteração de backend mudar informação, ação, estado ou fluxo perceptível ao usuário.
 13. Garantir que cada página de mockup apresente, imediatamente após a identificação da aplicação, a tag visual `Mockup Conceitual`, com fundo laranja claro e texto laranja escuro.
-14. Quando itens de menu, atalhos ou referências de funcionalidades representadas na página corresponderem a outras mockups existentes, vinculá-los ao respectivo arquivo `mockups/{ID}-{slug}_mockup.html`.
-15. Não criar links para páginas, funcionalidades ou fluxos que não possuam mockup correspondente criada.
+14. Garantir total conformidade com as diretrizes do `DESIGN.MD` e a estrutura do `requirements/template_webdesign.html`.
+15. Quando itens de menu, atalhos ou referências de funcionalidades representadas na página corresponderem a outras mockups existentes, vinculá-los ao respectivo arquivo `mockups/{ID}-{slug}_mockup.html`.
+16. Não criar links para páginas, funcionalidades ou fluxos que não possuam mockup correspondente criada.
 
 Exemplo de rastreabilidade:
 
@@ -819,7 +817,7 @@ REQ-FUNC-001: usuário deve consultar solicitações
 
 ├── specs/frontend/0001-gestao-solicitacoes/spec.md
 │   ├── UI-001: exibir listagem de solicitações do usuário
-│   └── mockup.html: representa a listagem e seus estados documentados
+│   └── mockup.html: representa a listagem conforme DESIGN.MD e o template
 │
 ├── specs/backend/0001-gestao-solicitacoes/spec.md
 │   └── RF-001: disponibilizar consulta de solicitações permitidas ao usuário
@@ -855,7 +853,8 @@ Antes de marcar uma spec como `Review Required`, o agente deve verificar:
 
 Quando uma mockup for aplicável, o agente também deve verificar:
 
-- [ ] `requirements/template_webdesign.html` foi lido e utilizado como base.
+- [ ] `requirements/template_webdesign.html` foi lido e utilizado como base estrutural.
+- [ ] As diretrizes do `DESIGN.MD` foram respeitadas (tokens, tipografia, cores, superfícies e componentes).
 - [ ] A mockup foi gerada após a consolidação das specs e roadmaps da sessão.
 - [ ] A mockup segue PrimeReact, PrimeFlex e PrimeIcons como padrão visual.
 - [ ] A mockup representa apenas requisitos, fluxos e estados documentados.
@@ -882,7 +881,7 @@ Antes de encerrar uma sessão, o agente deve:
 4. Atualizar `specs/ROADMAP.md`.
 5. Atualizar `specs/frontend/ROADMAP.md`, quando houver impacto de frontend.
 6. Atualizar `specs/backend/ROADMAP.md`, quando houver impacto de backend.
-7. Gerar ou sincronizar as mockups de todas as specs de frontend criadas ou modificadas na sessão, após a conclusão dos itens anteriores.
+7. Gerar ou sincronizar as mockups de todas as specs de frontend criadas ou modificadas na sessão, após a conclusão dos itens anteriores, garantindo conformidade com `template_webdesign.html` e `DESIGN.MD`.
 8. Garantir a cópia central em `mockups/{ID}-{slug}_mockup.html` e a cópia local em `specs/frontend/{ID}-{slug}/mockup.html`.
 9. Registrar uma próxima ação objetiva no checkpoint do roadmap global, incluindo pendência de mockup quando aplicável.
 
@@ -901,7 +900,8 @@ Exemplo de próxima ação inadequada:
 Ao finalizar o consumo dos documentos em `requirements/`, o repositório deve possuir:
 
 - `requirements/main_requirements.md` preservado como fonte mandatória.
-- `requirements/template_webdesign.html` preservado como template obrigatório de referência visual.
+- `DESIGN.MD` preservado como guia normativo do Design System.
+- `requirements/template_webdesign.html` preservado como template obrigatório de referência visual e layout.
 - Artefatos complementares preservados em `requirements/artifacts/`.
 - Um catálogo único de requisitos extraídos e rastreáveis.
 - Identificação explícita da prioridade de cada fonte.
@@ -910,7 +910,7 @@ Ao finalizar o consumo dos documentos em `requirements/`, o repositório deve po
 - Um roadmap específico de frontend.
 - Um roadmap específico de backend.
 - Specs separadas em `specs/frontend/` e `specs/backend/`.
-- Mockups HTML consolidadas em `mockups/{ID}-{slug}_mockup.html`.
+- Mockups HTML consolidadas em `mockups/{ID}-{slug}_mockup.html` alinhadas ao `DESIGN.MD`.
 - Uma cópia `mockup.html` em cada pasta de spec de frontend aplicável.
 - Sincronização entre cada mockup central e sua cópia local.
 - Rastreabilidade entre requisitos mandatórios, artefatos, specs de frontend, specs de backend e mockups.
