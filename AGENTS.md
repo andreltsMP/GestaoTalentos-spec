@@ -1,4 +1,4 @@
-# AGENTS.md — Geração de Specs de Frontend, Backend e Mockups a partir de Requisitos
+# AGENTS.md — Geração de Specs de Frontend, Backend, Mockups e Backlog a partir de Requisitos
 
 ## 1. Objetivo do repositório
 
@@ -8,6 +8,8 @@ Nesta etapa, a responsabilidade do agente é analisar os requisitos e os artefat
 
 Após criar ou modificar as specs e os roadmaps aplicáveis, o agente deve gerar ou sincronizar as mockups HTML das funcionalidades de frontend. As mockups são artefatos derivados das specs e devem refletir a aplicação de forma coerente e consolidada, seguindo estritamente as diretrizes de layout e identidade visual definidas no template base `requirements/template_webdesign.html` e no guia de design system `DESIGN.md`.
 
+Adicionalmente, a cada criação ou atualização de especificação, o agente deve gerar e manter o catálogo de atividades humanas em `project-backlog/backlog.csv`, estruturado na hierarquia `Epic` $\rightarrow$ `Feature` $\rightarrow$ `Product Backlog Item` $\rightarrow$ `Task` e atribuído com base no `project-backlog/team.md`, com as ações necessárias para desbloquear, orientar e validar a futura geração de código (conforme seção 19).
+
 O agente não deve implementar código de produção, criar banco de dados, criar APIs, configurar infraestrutura ou modificar sistemas externos nesta etapa. A criação de mockups HTML é permitida exclusivamente como documentação visual derivada das specs de frontend.
 
 Seu escopo é exclusivamente:
@@ -16,9 +18,10 @@ Seu escopo é exclusivamente:
 2. Identificar regras, restrições, dependências e lacunas.
 3. Catalogar os requisitos extraídos.
 4. Gerar specs de frontend e backend.
-5. Manter rastreabilidade entre requisitos, artefatos, specs e mockups.
+5. Manter rastreabilidade entre requisitos, artefatos, specs, mockups e backlog.
 6. Registrar dúvidas, conflitos e decisões pendentes.
 7. Gerar e manter mockups HTML derivadas das specs de frontend e em conformidade com `DESIGN.md`.
+8. Gerar e manter atualizado o backlog de atividades humanas (`project-backlog/backlog.csv`) para importação no Azure DevOps (conforme a seção 19).
 
 ***
 
