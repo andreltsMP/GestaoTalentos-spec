@@ -8,7 +8,7 @@ Nesta etapa, a responsabilidade do agente é analisar os requisitos e os artefat
 
 Após criar ou modificar as specs e os roadmaps aplicáveis, o agente deve gerar ou sincronizar as mockups HTML das funcionalidades de frontend. As mockups são artefatos derivados das specs e devem refletir a aplicação de forma coerente e consolidada, seguindo estritamente as diretrizes de layout e identidade visual definidas no template base `requirements/template_webdesign.html` e no guia de design system `DESIGN.md`.
 
-Adicionalmente, a cada criação ou atualização de especificação, o agente deve gerar e manter o catálogo de atividades humanas em `project-backlog/backlog.csv`, estruturado na hierarquia `Epic` $\rightarrow$ `Feature` $\rightarrow$ `Product Backlog Item` $\rightarrow$ `Task` e atribuído com base no `project-backlog/team.md`, com as ações necessárias para desbloquear, orientar e validar a futura geração de código (conforme seção 19).
+Adicionalmente, a cada criação ou atualização de especificação, o agente deve gerar e manter o catálogo consolidado de atividades humanas em `project-backlog/backlog.csv` e o recorte local correspondente em `specs/{contexto}/{ID}-{slug}/backlog.csv`. O catálogo consolidado é a fonte canônica, estruturada na hierarquia `Epic` $\rightarrow$ `Feature` $\rightarrow$ `Product Backlog Item` $\rightarrow$ `Task` e atribuída com base no `project-backlog/team.md`; os recortes locais são derivados dele e registram as ações necessárias para desbloquear, orientar e validar a futura geração de código de cada spec (conforme seção 19).
 
 O agente não deve implementar código de produção, criar banco de dados, criar APIs, configurar infraestrutura ou modificar sistemas externos nesta etapa. A criação de mockups HTML é permitida exclusivamente como documentação visual derivada das specs de frontend.
 
@@ -21,7 +21,7 @@ Seu escopo é exclusivamente:
 5. Manter rastreabilidade entre requisitos, artefatos, specs, mockups e backlog.
 6. Registrar dúvidas, conflitos e decisões pendentes.
 7. Gerar e manter mockups HTML derivadas das specs de frontend e em conformidade com `DESIGN.md`.
-8. Gerar e manter atualizado o backlog de atividades humanas (`project-backlog/backlog.csv`) para importação no Azure DevOps (conforme a seção 19).
+8. Gerar e manter atualizado o backlog consolidado de atividades humanas (`project-backlog/backlog.csv`) para importação no Azure DevOps e os recortes locais por spec (conforme a seção 19).
 
 ***
 
@@ -48,12 +48,14 @@ Seu escopo é exclusivamente:
 │   │   ├── ROADMAP.md
 │   │   ├── 0001-nome-da-funcionalidade/
 │   │   │   ├── spec.md
+│   │   │   ├── backlog.csv
 │   │   │   └── mockup.html
 │   │   └── ...
 │   └── backend/
 │       ├── ROADMAP.md
 │       ├── 0001-nome-da-funcionalidade/
-│       │   └── spec.md
+│       │   ├── spec.md
+│       │   └── backlog.csv
 │       └── ...
 ├── mockups/
 │   ├── 0001-nome-da-funcionalidade_mockup.html
@@ -175,6 +177,8 @@ Contém specs orientadas à experiência, fluxo e interface do usuário.
 
 Cada spec de frontend deve conter uma cópia local da mockup correspondente em `mockup.html`, quando a funcionalidade possuir representação visual aplicável.
 
+Cada spec de frontend deve conter um `backlog.csv` local, derivado de `project-backlog/backlog.csv`, com as atividades humanas relacionadas à interface, apresentação, acessibilidade, protótipos, critérios de aceite visuais e homologação do contexto frontend. Ele não é uma fonte independente nem deve ser importado junto ao backlog consolidado.
+
 ### `specs/backend/`
 
 Contém specs orientadas a capacidades de servidor, regras de negócio, dados, segurança, integrações e contratos.
@@ -199,6 +203,8 @@ Contém specs orientadas a capacidades de servidor, regras de negócio, dados, s
 * Design visual;
 * Estratégias específicas de navegação de interface;
 * Detalhes de experiência visual que não afetem uma regra de negócio.
+
+Cada spec de backend deve conter um `backlog.csv` local, derivado de `project-backlog/backlog.csv`, com as atividades humanas relacionadas a regras de negócio, contratos, integrações, acessos, dados, segurança e homologação do contexto backend. Ele não é uma fonte independente nem deve ser importado junto ao backlog consolidado.
 
 ### `mockups/`
 
@@ -226,9 +232,9 @@ A pasta `mockups/` representa a visão visual consolidada das funcionalidades e 
 
 ### `project-backlog/`
 
-Contém o backlog de atividades humanas e o template de cadastro da equipe para planejamento da futura geração do código:
+Contém o backlog consolidado de atividades humanas e o template de cadastro da equipe para planejamento da futura geração do código:
 
-* `project-backlog/backlog.csv`: catálogo estruturado de atividades humanas pré-codificação em formato CSV para importação no Azure DevOps.
+* `project-backlog/backlog.csv`: catálogo estruturado e canônico de atividades humanas pré-codificação em formato CSV para importação no Azure DevOps. Os `backlog.csv` locais sob `specs/` são recortes derivados deste arquivo e não devem ser importados junto a ele.
 * `project-backlog/team.md`: arquivo em Markdown com o mapeamento dos membros da equipe e seus respectivos papéis canônicos para atribuição automática nas tarefas.
 
 ***
@@ -460,10 +466,13 @@ As specs devem seguir esta estrutura:
 specs/
 ├── frontend/
 │   └── 0001-nome-da-funcionalidade/
-│       └── spec.md
+│       ├── spec.md
+│       ├── backlog.csv
+│       └── mockup.html
 └── backend/
     └── 0001-nome-da-funcionalidade/
-        └── spec.md
+        ├── spec.md
+        └── backlog.csv
 ```
 
 O identificador de uma funcionalidade deve ser o mesmo nos dois contextos quando ambas as specs representarem a mesma capacidade de negócio.
@@ -488,14 +497,17 @@ A numeração deve:
 Após criar ou atualizar specs, o agente deve:
 
 1. Atualizar os arquivos de roadmap:
+
 ```text
 specs/ROADMAP.md
 specs/frontend/ROADMAP.md
 specs/backend/ROADMAP.md
 ```
+
 2. O roadmap global deve registrar a funcionalidade e os contextos afetados.
 3. Os roadmaps de frontend e backend devem registrar a ordem específica de elaboração de suas specs.
-4. **Revisar e atualizar obrigatoriamente `project-backlog/backlog.csv`**, incluindo ou ajustando a `Feature` correspondente à spec, seus `Product Backlog Items` temáticos e as respectivas `Tasks` humanas necessárias para desbloqueio, revisão e validação daquela funcionalidade (conforme a seção 19).
+4. **Revisar e atualizar obrigatoriamente** **`project-backlog/backlog.csv`**, incluindo ou ajustando a `Feature` correspondente à spec, seus `Product Backlog Items` temáticos e as respectivas `Tasks` humanas necessárias para desbloqueio, revisão e validação daquela funcionalidade (conforme a seção 19).
+5. Gerar ou atualizar `specs/{contexto}/{ID}-{slug}/backlog.csv` como recorte derivado do backlog consolidado, contendo apenas os itens relacionados à spec e preservando uma árvore hierárquica completa. Tasks compartilhadas por specs de frontend e backend podem constar em ambos os recortes locais, mas representam uma única Task canônica no backlog consolidado.
 
 ### Etapa 8 — Geração e sincronização de mockups
 
@@ -1025,7 +1037,11 @@ Antes de marcar uma spec como `Review Required`, o agente deve verificar:
 * [ ] A rastreabilidade entre fonte, catálogo e spec está preenchida.
 * [ ] A spec está classificada corretamente como frontend, backend ou ambos.
 * [ ] Os roadmaps global e específicos foram atualizados.
-* [ ] O backlog de atividades humanas (`project-backlog/backlog.csv`) foi revisado e atualizado com as novas Features, PBIs e Tasks correspondentes à spec (conforme seção 19).
+* [ ] O backlog consolidado de atividades humanas (`project-backlog/backlog.csv`) foi revisado e atualizado com as novas Features, PBIs e Tasks correspondentes à spec (conforme seção 19).
+* [ ] O backlog local da spec foi criado ou sincronizado em `specs/{contexto}/{ID}-{slug}/backlog.csv`.
+* [ ] O backlog local contém somente itens relacionados à spec e preserva a árvore hierárquica completa.
+* [ ] O backlog local contém ao menos uma `Task` com `Activity=Testing`.
+* [ ] Toda Task local possui uma Task canônica correspondente em `project-backlog/backlog.csv`; Tasks compartilhadas entre frontend e backend estão presentes em ambos os recortes aplicáveis sem duplicar a Task canônica.
 
 Quando uma mockup for aplicável, o agente também deve verificar:
 
@@ -1058,9 +1074,10 @@ Antes de encerrar uma sessão, o agente deve:
 5. Atualizar `specs/frontend/ROADMAP.md`, quando houver impacto de frontend.
 6. Atualizar `specs/backend/ROADMAP.md`, quando houver impacto de backend.
 7. Revisar e atualizar `project-backlog/backlog.csv` com todas as novas specs ou alterações realizadas na sessão, garantindo a árvore hierárquica completa (Epic → Feature → Product Backlog Item → Task) e a integridade das tarefas humanas.
-8. Gerar ou sincronizar as mockups de todas as specs de frontend criadas ou modificadas na sessão, após a conclusão dos itens anteriores, garantindo conformidade com `template_webdesign.html` e `DESIGN.md`.
-9. Garantir a cópia central em `mockups/{ID}-{slug}_mockup.html` e a cópia local em `specs/frontend/{ID}-{slug}/mockup.html`.
-10. Registrar uma próxima ação objetiva no checkpoint do roadmap global, incluindo pendência de mockup quando aplicável.
+8. Gerar ou sincronizar `specs/{contexto}/{ID}-{slug}/backlog.csv` para cada spec criada ou modificada na sessão, garantindo que cada recorte seja derivado do backlog consolidado e que Tasks compartilhadas não sejam duplicadas como itens canônicos.
+9. Gerar ou sincronizar as mockups de todas as specs de frontend criadas ou modificadas na sessão, após a conclusão dos itens anteriores, garantindo conformidade com `template_webdesign.html` e `DESIGN.md`.
+10. Garantir a cópia central em `mockups/{ID}-{slug}_mockup.html` e a cópia local em `specs/frontend/{ID}-{slug}/mockup.html`.
+11. Registrar uma próxima ação objetiva no checkpoint do roadmap global, incluindo pendência de mockup quando aplicável.
 
 Exemplo de próxima ação adequada:
 
@@ -1092,50 +1109,64 @@ Ao finalizar o consumo dos documentos em `requirements/`, o repositório deve po
 * Sincronização entre cada mockup central e sua cópia local.
 * Rastreabilidade entre requisitos mandatórios, artefatos, specs de frontend, specs de backend e mockups.
 * Specs e mockups claras, auditáveis, sem requisitos inventados e prontas para revisão humana.
-* A pasta `project-backlog/` contendo `backlog.csv` com as atividades humanas necessárias durante a futura geração do código, e `team.md` com o cadastro da equipe (conforme a seção 19).
+* A pasta `project-backlog/` contendo o `backlog.csv` consolidado com as atividades humanas necessárias durante a futura geração do código, e `team.md` com o cadastro da equipe (conforme a seção 19).
+* Um `backlog.csv` local em cada pasta de spec criada, em `specs/frontend/{ID}-{slug}/backlog.csv` e/ou `specs/backend/{ID}-{slug}/backlog.csv`, sincronizado como recorte rastreável do backlog consolidado.
 
 ***
 
-## 19. Backlog de atividades humanas (`project-backlog/backlog.csv`)
+## 19. Backlogs de atividades humanas
 
 ### 19.1 Objetivo
 
 O `project-backlog/backlog.csv` registra **as atividades que humanos (desenvolvedores e analistas) precisarão executar durante a futura
-geração do código**, para desbloquear, orientar, validar e evidenciar essa geração. Ele **não** é um backlog geral de
-implementação, nem uma lista de tarefas de codificação que o próprio agente ou a IA executarão.
+geração do código**, para desbloquear, orientar, validar e evidenciar essa geração. Ele é a fonte canônica do backlog e **não** é um backlog geral de implementação, nem uma lista de tarefas de codificação que o próprio agente ou a IA executarão.
+
+Para cada spec, o agente deve gerar um `backlog.csv` local em `specs/{contexto}/{ID}-{slug}/backlog.csv`. Esse arquivo é um recorte derivado do backlog canônico, limitado às atividades relacionadas à spec e destinado à rastreabilidade local; ele não é uma fonte independente nem deve ser importado junto ao arquivo consolidado.
 
 Cada item deve responder à pergunta: *"O que uma pessoa precisa decidir, fornecer, preparar, revisar ou validar para que
 o código possa ser gerado corretamente a partir das specs?"*
 
 Exemplos de atividades válidas:
 
-- Responder a uma questão em aberto (`specs/OPEN-QUESTIONS.md`) que bloqueia uma spec.
-- Decidir uma regra de negócio, perfil de acesso, política de retenção ou métrica ausente.
-- Validar e aprovar uma spec (`Draft` → `Review Required` → `Approved`).
-- Preparar ambiente, credenciais ou acessos de integração necessários para o desenvolvimento.
-- Fornecer dados de homologação ou cenários de teste.
-- Revisar o código gerado contra os critérios de aceite das specs e registrar evidências.
+* Responder a uma questão em aberto (`specs/OPEN-QUESTIONS.md`) que bloqueia uma spec.
+* Decidir uma regra de negócio, perfil de acesso, política de retenção ou métrica ausente.
+* Validar e aprovar uma spec (`Draft` → `Review Required` → `Approved`).
+* Preparar ambiente, credenciais ou acessos de integração necessários para o desenvolvimento.
+* Fornecer dados de homologação ou cenários de teste.
+* Revisar o código gerado contra os critérios de aceite das specs e registrar evidências.
 
 Exemplos de atividades **inválidas** (não devem entrar no backlog):
 
-- "Implementar o endpoint X" ou "Criar o componente Y" (trabalho de codificação, não atividade humana de apoio).
-- Tarefas genéricas sem relação com a geração do código a partir das specs.
+* "Implementar o endpoint X" ou "Criar o componente Y" (trabalho de codificação, não atividade humana de apoio).
+* Tarefas genéricas sem relação com a geração do código a partir das specs.
 
-### 19.2 Localização e formato
+### 19.2 Localização, fonte de verdade e formato
 
-- Arquivo único: `project-backlog/backlog.csv`.
-- Codificação UTF-8, primeira linha de cabeçalho obrigatória.
-- O arquivo deve ser importável pelo recurso **Import Work Items (CSV)** do Azure DevOps.
-- As colunas devem corresponder a campos de work item do Azure DevOps (ver a referência de campos:
-  https://learn.microsoft.com/en-us/azure/devops/boards/work-items/guidance/work-item-field). Foram escolhidos os campos
+* **Backlog consolidado canônico:** `project-backlog/backlog.csv`.
+* **Backlogs locais derivados:** `specs/frontend/{ID}-{slug}/backlog.csv` e `specs/backend/{ID}-{slug}/backlog.csv`, criados somente quando a respectiva spec existir.
+* Todos os arquivos usam codificação UTF-8 e primeira linha de cabeçalho obrigatória.
+* Somente `project-backlog/backlog.csv` deve ser importado pelo recurso **Import Work Items (CSV)** do Azure DevOps. Os arquivos locais não devem ser importados junto a ele, pois podem reproduzir Tasks canônicas compartilhadas entre contextos.
+* As colunas devem corresponder a campos de work item do Azure DevOps (ver a referência de campos:
+  <https://learn.microsoft.com/en-us/azure/devops/boards/work-items/guidance/work-item-field>). Foram escolhidos os campos
   mais relevantes e comuns aos tipos `Epic`, `Feature`, `Product Backlog Item` e `Task`, evitando campos dependentes de processo
   (ex.: `State`, `Area Path`, `Iteration Path`, `Acceptance Criteria`) para não gerar erros de importação; o estado inicial padrão é
   aplicado automaticamente.
-- Colunas, nesta ordem exata:
+
+* Colunas, nesta ordem exata:
 
 ```csv
 Work Item Type,Title 1,Title 2,Title 3,Title 4,Priority,Activity,Tags,Assigned To,Description
 ```
+
+#### 19.2.1 Regras dos backlogs locais por spec
+
+* Cada backlog local deve ser gerado a partir do backlog consolidado após a criação ou atualização da sua `spec.md`; edições manuais locais não são fonte de verdade.
+* Cada recorte deve conter uma árvore completa `Epic` → `Feature` → `Product Backlog Item` → `Task`, limitada à Feature, aos PBIs e às Tasks relacionados à spec.
+* O recorte deve manter o mesmo `Title`, `Priority`, `Activity`, `Assigned To` e critérios de conclusão do item canônico. A `Description` pode acrescentar o caminho da spec local, desde que não altere o significado da atividade.
+* As `Tags` dos itens locais devem incluir `Contexto-Frontend` ou `Contexto-Backend`, conforme aplicável, e a referência da spec, como `FE-0001` ou `BE-0001`.
+* Uma Task canônica que impacte frontend e backend pode ser reproduzida nos dois recortes locais. Essa reprodução não cria uma nova Task no backlog consolidado e deve usar o mesmo título, prioridade e `Activity` da Task canônica.
+* Para uma Task compartilhada, as `Tags` devem identificar ambos os contextos e a `Description` deve referenciar os dois caminhos de spec afetados.
+* Para cada item local, deve existir item canônico semanticamente correspondente em `project-backlog/backlog.csv`; a correspondência é dada pelo mesmo título, `Activity`, prioridade e referências principais.
 
 ### 19.3 Hierarquia e regras das colunas
 
@@ -1143,117 +1174,156 @@ Work Item Type,Title 1,Title 2,Title 3,Title 4,Priority,Activity,Tags,Assigned T
 
 O backlog segue a hierarquia padrão de 4 níveis do Azure DevOps:
 
-$$\text{Epic} \longrightarrow \text{Feature} \longrightarrow \text{Product Backlog Item} \longrightarrow \text{Task}$$
+$\text{Epic} \longrightarrow \text{Feature} \longrightarrow \text{Product Backlog Item} \longrightarrow \text{Task}$
 
 As seguintes regras de cardinalidade e dependência são obrigatórias:
 
 1. **Multiplicidade:**
-   - 1 `Epic` contém 1 ou mais `Feature`s.
-   - 1 `Feature` contém 1 ou mais `Product Backlog Item`s.
-   - 1 `Product Backlog Item` contém 1 ou mais `Task`s.
+   * 1 `Epic` contém 1 ou mais `Feature`s.
+   * 1 `Feature` contém 1 ou mais `Product Backlog Item`s.
+   * 1 `Product Backlog Item` contém 1 ou mais `Task`s.
 2. **Integridade estrita (sem itens órfãos):**
-   - Nenhuma `Task` pode existir sem um `Product Backlog Item` pai.
-   - Nenhum `Product Backlog Item` pode existir sem uma `Feature` pai.
-   - Nenhuma `Feature` pode existir sem um `Epic` pai.
-   - Todos os itens devem estar estritamente vinculados na árvore hierárquica.
+   * Nenhuma `Task` pode existir sem um `Product Backlog Item` pai.
+   * Nenhum `Product Backlog Item` pode existir sem uma `Feature` pai.
+   * Nenhuma `Feature` pode existir sem um `Epic` pai.
+   * Todos os itens devem estar estritamente vinculados na árvore hierárquica.
 
 #### 19.3.2 Padrão de identificação e título de cada nível
 
-- **Epic (Nível 1):** representa o produto/sistema consolidado e sua versão de entrega.
-  - **Identificação/Título:** deve ser obrigatoriamente composto pelo valor do campo `Produto/Sistema` do arquivo
-    `requirements/main_requirements.md`, acrescido de ` - Versão ` e o valor do campo `Versão` (ex.: `Portal de Atendimento - Versão 1.0.0`).
-- **Feature (Nível 2):** representa a funcionalidade/capacidade de negócio descrita nas especificações.
-  - **Identificação/Título:** corresponde à spec que agrupa os itens de backlog e tarefas, no formato
+* **Epic (Nível 1):** representa o produto/sistema consolidado e sua versão de entrega.
+  * **Identificação/Título:** deve ser obrigatoriamente composto pelo valor do campo `Produto/Sistema` do arquivo
+    `requirements/main_requirements.md`, acrescido de `- Versão` e o valor do campo `Versão` (ex.: `Portal de Atendimento - Versão 1.0.0`).
+
+* **Feature (Nível 2):** representa a funcionalidade/capacidade de negócio descrita nas especificações.
+  * **Identificação/Título:** corresponde à spec que agrupa os itens de backlog e tarefas, no formato
     `{ID de 4 dígitos} - {Nome da Funcionalidade}` (ex.: `0001 - Gestão de solicitações`).
-- **Product Backlog Item (Nível 3):** agrupador temático de atividades humanas dentro daquela funcionalidade
+
+* **Product Backlog Item (Nível 3):** agrupador temático de atividades humanas dentro daquela funcionalidade
   (ex.: "Decisões de negócio pendentes", "Revisão e aprovação de specs", "Preparação de ambiente e integrações").
-- **Task (Nível 4):** atividade humana acionável específica, executável por um membro da equipe
+
+* **Task (Nível 4):** atividade humana acionável específica, executável por um membro da equipe
   (ex.: "Definir perfis de autorização (Q-001)", "Validar spec FE-0001").
 
 #### 19.3.3 Regras de preenchimento das colunas
 
-- **Work Item Type** (System, obrigatório): deve ser exatamente `Epic`, `Feature`, `Product Backlog Item` ou `Task`.
-- **Title 1 / Title 2 / Title 3 / Title 4** (System, obrigatório): título da atividade, distribuído em colunas indentadas
+* **Work Item Type** (System, obrigatório): deve ser exatamente `Epic`, `Feature`, `Product Backlog Item` ou `Task`.
+* **Title 1 / Title 2 / Title 3 / Title 4** (System, obrigatório): título da atividade, distribuído em colunas indentadas
   para criar o vínculo pai-filho na importação (ver seção 19.8):
-  - Em linha de `Epic`: preencher `Title 1` (deixar `Title 2`, `Title 3` e `Title 4` vazios).
-  - Em linha de `Feature`: preencher `Title 2` (deixar `Title 1`, `Title 3` e `Title 4` vazios).
-  - Em linha de `Product Backlog Item`: preencher `Title 3` (deixar `Title 1`, `Title 2` e `Title 4` vazios).
-  - Em linha de `Task`: preencher `Title 4` (deixar `Title 1`, `Title 2` e `Title 3` vazios).
-  - Cada item filho deve aparecer **imediatamente abaixo** do seu respectivo item pai na sequência do arquivo.
-- **Priority** (campo de planejamento): valor numérico de `1` a `4`, com o seguinte significado (alinhado à seção 16):
-  - `1` = Crítica
-  - `2` = Alta
-  - `3` = Média
-  - `4` = Baixa
-- **Activity** (campo do processo Agile): classifica o tipo de trabalho. Aplica-se exclusivamente a `Task`; para `Epic`,
+
+  * Em linha de `Epic`: preencher `Title 1` (deixar `Title 2`, `Title 3` e `Title 4` vazios).
+  * Em linha de `Feature`: preencher `Title 2` (deixar `Title 1`, `Title 3` e `Title 4` vazios).
+  * Em linha de `Product Backlog Item`: preencher `Title 3` (deixar `Title 1`, `Title 2` e `Title 4` vazios).
+  * Em linha de `Task`: preencher `Title 4` (deixar `Title 1`, `Title 2` e `Title 3` vazios).
+  * Cada item filho deve aparecer **imediatamente abaixo** do seu respectivo item pai na sequência do arquivo.
+* **Priority** (campo de planejamento): valor numérico de `1` a `4`, com o seguinte significado (alinhado à seção 16):
+  * `1` = Crítica
+  * `2` = Alta
+  * `3` = Média
+  * `4` = Baixa
+* **Activity** (campo do processo Agile): classifica o tipo de trabalho. Aplica-se exclusivamente a `Task`; para `Epic`,
   `Feature` e `Product Backlog Item` deve ficar em branco. Use exatamente um dos valores permitidos:
-  - `Deployment`
-  - `Design`
-  - `Development`
-  - `Documentation`
-  - `Requirements`
-  - `Testing`
-  - Orientação de uso para atividades humanas: decisões de negócio e revisão/aprovação de specs → `Requirements`;
+
+  * `Deployment`
+  * `Design`
+  * `Development`
+  * `Documentation`
+  * `Requirements`
+  * `Testing`
+  * Orientação de uso para atividades humanas: decisões de negócio e revisão/aprovação de specs → `Requirements`;
     validação de modelo de dados e decisões de modelo → `Design`; preparação de ambiente, credenciais e integrações →
     `Deployment`; dados de homologação, cenários e validação de evidências → `Testing`; produção de documentação →
     `Documentation`; eventual codificação de apoio → `Development`.
-- **Tags**: rótulos separados por ponto e vírgula (`;`) para agrupamento e filtro no Azure Boards. Recomenda-se incluir
+
+* **Tags**: rótulos separados por ponto e vírgula (`;`) para agrupamento e filtro no Azure Boards. Recomenda-se incluir
   o tema (ex.: "Decisão de negócio", "Ambiente", "Revisão de spec") e as referências relacionadas (ex.: `Q-001`,
   `FE-0001`, `BE-0002`, `INT-005`). O vínculo pai-filho é criado pela indentação das colunas de título (ver seção 19.8);
-  as Tags servem para agrupamento/filtro complementar.
-- **Assigned To** (campo de atribuição): responsável pela atividade:
-  - Para `Epic`, `Feature` e `Product Backlog Item`: **deve ser sempre deixado em branco**.
-  - Para `Task`: **obrigatoriamente atribuído através de `project-backlog/team.md`** por correspondência direta entre o campo `Activity` da tarefa e o campo `Papel` do membro (ver seção 19.6). Para que o Azure DevOps resolva a identidade corretamente na importação, usar o formato `Nome <e-mail>` (ex.: `Ana Souza <ana.souza@mpms.mp.br>`). Se `team.md` não existir, ou não houver membro com o papel exigido, o campo deve ficar em branco.
-- **Description** (System): descrição do que deve ser realizado, incluindo, quando aplicável, a spec, a questão em
-  aberto ou a fonte relacionada, e o critério para considerar a atividade concluída.
+  as Tags servem para agrupamento/filtro complementar. Em backlogs locais, incluir também `Contexto-Frontend` ou `Contexto-Backend`; em Tasks compartilhadas, incluir ambos.
+
+* **Assigned To** (campo de atribuição): responsável pela atividade:
+  * Para `Epic`, `Feature` e `Product Backlog Item`: **deve ser sempre deixado em branco**.
+  * Para `Task`: **obrigatoriamente atribuído através de** **`project-backlog/team.md`** por correspondência direta entre o campo `Activity` da tarefa e o campo `Papel` do membro (ver seção 19.6). Para que o Azure DevOps resolva a identidade corretamente na importação, usar o formato `Nome <e-mail>` (ex.: `Ana Souza <anasouza@mpms.mp.br>`). Se `team.md` não existir, ou não houver membro com o papel exigido, o campo deve ficar em branco.
+* **Description** (System, obrigatória): descreve o item de forma rastreável. Deve usar tags HTML simples e conter, nesta ordem:
+  * `<b>Contexto:</b>` situação, necessidade, risco ou problema que motivou o item.
+  * `<b>Objetivo:</b>` resultado humano esperado.
+  * `<b>Critério de conclusão:</b>` condição objetiva e verificável para encerrar a atividade, incluindo a evidência esperada quando aplicável.
+  * `<b>Dependências:</b>` specs, decisões, acessos, integrações, credenciais ou atividades prévias; usar `Nenhuma` quando não houver.
+  * `<b>Referências:</b>` IDs de specs, questões abertas, integrações, requisitos ou fontes relacionadas; em backlogs locais, incluir o caminho da `spec.md` correspondente; usar `Nenhuma` quando não houver.
+  * `<b>Notas:</b>` riscos, premissas, restrições ou decisões relevantes; usar `Nenhuma` quando não houver.
+  * Quando útil, incluir `<b>Passos:</b>` com `<ol>` e `<li>` para detalhar a execução. O critério de conclusão não pode ser subjetivo, como “realizar validação”; deve indicar o resultado ou a evidência que comprova a conclusão.
 
 ### 19.4 Regras de conteúdo, qualidade e gatilhos de sincronização
 
-- **Gatilho de sincronização obrigatória:** a cada criação, atualização ou descontinuação de uma spec (`spec.md`), o agente deve obrigatoriamente revisar e atualizar `project-backlog/backlog.csv`.
-- **Ao registrar uma nova spec:**
-  - Inserir a linha de `Feature` correspondente com o ID e título da spec, subordinada ao `Epic` do projeto.
-  - Inserir os `Product Backlog Items` temáticos da funcionalidade (ex.: decisões pendentes, homologação, validação de regras).
-  - Inserir as `Tasks` humanas necessárias, garantindo ao menos uma tarefa de revisão/aprovação caso a spec esteja em `Draft`.
-- **Ao atualizar uma spec existente:**
-  - Avaliar se novas questões em aberto (`specs/OPEN-QUESTIONS.md`) com criticidade crítica ou alta exigem inclusão de novas `Tasks`.
-  - Avaliar se novas restrições, dependências de integração ou alterações de dados demandam novas `Tasks` de preparação técnica ou credenciais.
-  - Atualizar o status, descrições ou critérios de conclusão das `Tasks` impactadas.
-- **Regras gerais de qualidade:**
-  - Toda questão crítica ou alta em `specs/OPEN-QUESTIONS.md` deve ter uma `Task` correspondente no backlog.
-  - Toda spec em `Draft` deve ter ao menos uma `Task` de revisão/aprovação humana.
-  - Integrações e restrições que exijam ação humana (credenciais, acessos, dados) devem gerar `Task`.
-  - Anomalias registradas como risco devem gerar uma `Task` de decisão/validação humana (não uma correção silenciosa).
-  - Campos que contenham vírgula ou quebras de linha devem ser envolvidos por aspas duplas, conforme o padrão CSV.
-  - A hierarquia estrita `Epic` $\rightarrow$ `Feature` $\rightarrow$ `Product Backlog Item` $\rightarrow$ `Task` deve ser integralmente preservada a cada atualização.
+* **Gatilho de sincronização obrigatória:** a cada criação, atualização ou descontinuação de uma spec (`spec.md`), o agente deve obrigatoriamente revisar e atualizar `project-backlog/backlog.csv` e regenerar os backlogs locais das specs impactadas.
+* **Ao registrar uma nova spec:**
+  * Inserir a linha de `Feature` correspondente com o ID e título da spec, subordinada ao `Epic` do projeto.
+  * Inserir os `Product Backlog Items` temáticos da funcionalidade (ex.: decisões pendentes, homologação, validação de regras).
+  * Inserir as `Tasks` humanas necessárias, garantindo ao menos uma tarefa de revisão/aprovação caso a spec esteja em `Draft`.
+  * Inserir ao menos uma `Task` com `Activity` igual a `Testing`, subordinada a um `Product Backlog Item` da `Feature` correspondente. A tarefa deve cobrir, conforme aplicável, dados de homologação, cenários de teste, critérios de aceite, validação de evidências ou aprovação de homologação.
+  * Gerar o `backlog.csv` local da spec como recorte da árvore consolidada, incluindo apenas os itens relacionados ao seu contexto.
+* **Ao atualizar uma spec existente:**
+  * Avaliar se novas questões em aberto (`specs/OPEN-QUESTIONS.md`) com criticidade crítica ou alta exigem inclusão de novas `Tasks`.
+  * Avaliar se novas restrições, dependências de integração ou alterações de dados demandam novas `Tasks` de preparação técnica ou credenciais.
+  * Confirmar que a `Feature` da spec mantém ao menos uma `Task` com `Activity` igual a `Testing` e atualizar sua descrição quando critérios de aceite, cenários ou evidências forem impactados.
+  * Atualizar o status, descrições ou critérios de conclusão das `Tasks` impactadas.
+  * Regenerar o backlog local da spec e todos os demais recortes locais que reproduzam Tasks canônicas impactadas.
+* **Ao descontinuar, renomear ou mover uma spec:**
+  * Manter ou remover o backlog local conforme o destino da spec; se ela for movida ou renomeada, mover o `backlog.csv` com a pasta da spec.
+  * Remover do backlog consolidado e dos recortes locais as Tasks que não tenham mais relação com specs ativas, preservando-as apenas quando a política de histórico do projeto exigir.
+* **Regras gerais de qualidade:**
+  * Toda questão crítica ou alta em `specs/OPEN-QUESTIONS.md` deve ter uma `Task` correspondente no backlog.
+  * Toda spec em `Draft` deve ter ao menos uma `Task` de revisão/aprovação humana.
+  * Toda `Feature` associada a uma spec deve conter ao menos uma `Task` humana com `Activity` igual a `Testing`, com referências à spec e critério de conclusão definido.
+  * Integrações e restrições que exijam ação humana (credenciais, acessos, dados) devem gerar `Task`.
+  * Anomalias registradas como risco devem gerar uma `Task` de decisão/validação humana (não uma correção silenciosa).
+  * Todo backlog local deve ser subconjunto rastreável do backlog consolidado; uma Task compartilhada pode existir em múltiplos recortes, mas somente uma vez como Task canônica.
+  * Campos que contenham vírgula ou quebras de linha devem ser envolvidos por aspas duplas, conforme o padrão CSV.
+  * A hierarquia estrita `Epic` $\rightarrow$ `Feature` $\rightarrow$ `Product Backlog Item` $\rightarrow$ `Task` deve ser integralmente preservada a cada atualização.
 
 ### 19.5 Exemplo
 
+O exemplo abaixo usa como referência para a ordem hierárquica, a granularidade dos títulos e a distribuição de múltiplas `Tasks` sob um mesmo `Product Backlog Item`. As regras e os campos normativos deste backlog humano permanecem os definidos nesta seção.
+
 ```csv
 Work Item Type,Title 1,Title 2,Title 3,Title 4,Priority,Activity,Tags,Assigned To,Description
-Epic,Portal de Atendimento - Versão 1.0.0,,,,1,,,,,<b>Contexto:</b> Épico raiz representando o produto e versão.<br><b>Referências:</b> requirements/main_requirements.md
-Feature,,0001 - Gestão de solicitações,,,1,,,,,<b>Contexto:</b> Funcionalidade de gestão de solicitações do cidadão.<br><b>Referências:</b> specs/frontend/0001-gestao-solicitacoes, specs/backend/0001-gestao-solicitacoes
-Product Backlog Item,,,Decisões de negócio pendentes,,1,,Decisão de negócio; Q-001,,<b>Contexto:</b> Agrupa as decisões humanas que desbloqueiam a geração do código a partir das specs.<br><b>Passos:</b><ol><li>Acompanhar as tasks de decisão vinculadas.</li><li>Garantir resposta a toda questão crítica/alta.</li></ol><b>Referências:</b> specs/OPEN-QUESTIONS.md<br><b>Conclusão:</b> Todas as questões vinculadas respondidas e specs atualizadas.
-Task,,,,Definir perfis de autorização (Q-001),2,Requirements,Decisão de negócio; Autorização; Q-001,Ana Souza <ana.souza@mpms.mp.br>,"<b>Contexto:</b> Os perfis/papéis de autorização do painel administrativo não estão definidos nas fontes.<br><b>Passos:</b><ol><li>Levantar os perfis de usuário.</li><li>Definir permissões por operação.</li><li>Registrar a decisão em OPEN-QUESTIONS.md.</li><li>Atualizar SEC-007 em BE-0002..0006 e FE-0002.</li></ol><b>Referências:</b> Q-001; BE-0002..0006; FE-0002<br><b>Conclusão:</b> Decisão registrada e specs atualizadas."
+Epic,Portal de Atendimento - Versão 1.0.0,,,,1,,,,"<b>Contexto:</b> Produto consolidado e versão de entrega.<br><b>Objetivo:</b> Organizar as atividades humanas que apoiam a geração do código.<br><b>Critério de conclusão:</b> Features e atividades humanas da versão estão registradas e rastreáveis.<br><b>Dependências:</b> requirements/main_requirements.md.<br><b>Referências:</b> requirements/main_requirements.md.<br><b>Notas:</b> Nenhuma."
+Feature,,0001 - Gestão do Menu do Portal,,,1,,,,"<b>Contexto:</b> Funcionalidade de configuração e exibição dinâmica dos menus do portal.<br><b>Objetivo:</b> Organizar as atividades humanas necessárias para a funcionalidade.<br><b>Critério de conclusão:</b> PBIs e Tasks necessários estão vinculados à Feature.<br><b>Dependências:</b> Specs FE-0001 e BE-0001.<br><b>Referências:</b> FE-0001; BE-0001.<br><b>Notas:</b> Nenhuma."
+Product Backlog Item,,,Decisões e validações para o menu dinâmico,,1,,Decisão de negócio; FE-0001; BE-0001,,"<b>Contexto:</b> Regras de acesso e critérios de aceite precisam ser validados antes da geração do código.<br><b>Objetivo:</b> Agrupar decisões e validações humanas do menu dinâmico.<br><b>Critério de conclusão:</b> Todas as Tasks vinculadas foram concluídas e as specs foram atualizadas.<br><b>Dependências:</b> FE-0001; BE-0001; Q-001.<br><b>Referências:</b> FE-0001; BE-0001; Q-001.<br><b>Notas:</b> Nenhuma."
+Task,,,,Definir regras de exibição do menu por perfil de usuário,2,Requirements,Decisão de negócio; Autorização; Q-001,Ana Souza <anasouza@mpms.mp.br>,"<b>Contexto:</b> As regras de visibilidade dos itens de menu ainda não estão consolidadas.<br><b>Objetivo:</b> Definir permissões de menu por perfil de usuário.<br><b>Critério de conclusão:</b> Matriz de perfis e itens de menu aprovada e registrada nas specs.<br><b>Dependências:</b> Q-001.<br><b>Referências:</b> Q-001; FE-0001; BE-0001.<br><b>Notas:</b> Nenhuma.<br><b>Passos:</b><ol><li>Definir os perfis de acesso.</li><li>Relacionar cada perfil aos itens de menu permitidos.</li><li>Registrar a decisão nas specs relacionadas.</li></ol>"
+Task,,,,Validar protótipo e comportamento responsivo do menu,3,Design,Revisão de spec; Protótipo; FE-0001,Bruno Lima <brunolima@mpms.mp.br>,"<b>Contexto:</b> O comportamento visual do menu precisa de validação humana.<br><b>Objetivo:</b> Confirmar a aderência do protótipo às regras de navegação.<br><b>Critério de conclusão:</b> Protótipo aprovado ou ajustes registrados na spec.<br><b>Dependências:</b> FE-0001; regras de perfil aprovadas.<br><b>Referências:</b> FE-0001; Q-001.<br><b>Notas:</b> Nenhuma."
+Task,,,,Preparar credenciais e acesso ao serviço de menu,2,Deployment,Ambiente; Integração; INT-001,Ana Paula <anapaula@mpms.mp.br>,"<b>Contexto:</b> A integração depende de credenciais e acesso ao ambiente alvo.<br><b>Objetivo:</b> Disponibilizar os acessos necessários para a integração.<br><b>Critério de conclusão:</b> Credenciais válidas e acesso ao serviço confirmados por evidência registrada.<br><b>Dependências:</b> INT-001.<br><b>Referências:</b> INT-001; BE-0001.<br><b>Notas:</b> Nenhuma."
+Task,,,,Validar cenários de homologação do menu por perfil,2,Testing,Homologação; Critério de aceite; FE-0001,Lia Matos <liamatos@mpms.mp.br>,"<b>Contexto:</b> Os cenários de validação precisam cobrir os perfis e regras definidos.<br><b>Objetivo:</b> Validar os critérios de aceite do menu para cada perfil.<br><b>Critério de conclusão:</b> Cenários executados com evidências registradas e pendências reportadas.<br><b>Dependências:</b> Regras de perfil aprovadas; ambiente de homologação disponível.<br><b>Referências:</b> FE-0001; BE-0001; Q-001.<br><b>Notas:</b> Nenhuma."
+```
+
+#### Exemplo de recorte local por spec
+
+O arquivo `specs/frontend/0001-gestao-do-menu/backlog.csv` pode reproduzir a Task canônica de homologação quando ela também impacta a spec de backend. A reprodução identifica os dois contextos, mas não cria uma segunda Task em `project-backlog/backlog.csv`.
+
+```csv
+Work Item Type,Title 1,Title 2,Title 3,Title 4,Priority,Activity,Tags,Assigned To,Description
+Epic,Portal de Atendimento - Versão 1.0.0,,,,1,,,,"<b>Contexto:</b> Recorte do produto para a spec de frontend.<br><b>Objetivo:</b> Apresentar as atividades humanas relacionadas ao contexto frontend.<br><b>Critério de conclusão:</b> Itens relacionados à spec estão sincronizados com o backlog consolidado.<br><b>Dependências:</b> project-backlog/backlog.csv.<br><b>Referências:</b> specs/frontend/0001-gestao-do-menu/spec.md.<br><b>Notas:</b> Recorte derivado; não importar junto ao backlog consolidado."
+Feature,,0001 - Gestão do Menu do Portal,,,1,,,,"<b>Contexto:</b> Funcionalidade coberta pela spec de frontend.<br><b>Objetivo:</b> Agrupar atividades humanas relacionadas à interface do menu.<br><b>Critério de conclusão:</b> PBIs e Tasks do contexto frontend estão vinculados.<br><b>Dependências:</b> FE-0001.<br><b>Referências:</b> specs/frontend/0001-gestao-do-menu/spec.md; FE-0001.<br><b>Notas:</b> Nenhuma."
+Product Backlog Item,,,Validação de homologação do menu,,1,,Homologação; FE-0001; BE-0001; Contexto-Frontend; Contexto-Backend,,"<b>Contexto:</b> A homologação valida comportamento integrado de interface e serviço.<br><b>Objetivo:</b> Agrupar a validação humana compartilhada entre os dois contextos.<br><b>Critério de conclusão:</b> Task de homologação sincronizada com o backlog consolidado.<br><b>Dependências:</b> FE-0001; BE-0001.<br><b>Referências:</b> specs/frontend/0001-gestao-do-menu/spec.md; specs/backend/0001-gestao-do-menu/spec.md.<br><b>Notas:</b> Recorte local de item canônico compartilhado."
+Task,,,,Validar cenários de homologação do menu por perfil,2,Testing,Homologação; Critério de aceite; FE-0001; BE-0001; Contexto-Frontend; Contexto-Backend,Lia Matos <liamatos@mpms.mp.br>,"<b>Contexto:</b> Os cenários cobrem a interface e o serviço de menu.<br><b>Objetivo:</b> Validar os critérios de aceite do menu para cada perfil.<br><b>Critério de conclusão:</b> Cenários executados com evidências registradas e pendências reportadas.<br><b>Dependências:</b> Regras de perfil aprovadas; ambiente de homologação disponível.<br><b>Referências:</b> specs/frontend/0001-gestao-do-menu/spec.md; specs/backend/0001-gestao-do-menu/spec.md; FE-0001; BE-0001; Q-001.<br><b>Notas:</b> Reprodução local da Task canônica em project-backlog/backlog.csv."
 ```
 
 ### 19.6 Arquivo `project-backlog/team.md` e atribuição por papel
 
 O repositório contém o arquivo `project-backlog/team.md` que define os membros da equipe humana, seus identificadores
-(e-mail) e seus papéis. O agente deve usá-lo para **preencher automaticamente a coluna `Assigned To` das `Tasks`**,
+(e-mail) e seus papéis. O agente deve usá-lo para **preencher automaticamente a coluna** **`Assigned To`** **das** **`Tasks`**,
 fazendo a correspondência direta entre o campo `Activity` da tarefa e o `Papel` do membro em `team.md`.
 
 #### Formato de `project-backlog/team.md`
 
-- Arquivo único: `project-backlog/team.md`, em Markdown.
-- Deve conter uma tabela com as colunas: `Identificador (e-mail)`, `Nome` e `Papel`.
-- O `Identificador (e-mail)` e `Nome` são usados no formato `Nome <e-mail>` na coluna `Assigned To` de `project-backlog/backlog.csv`.
-- A identificação do **`Papel` deve ser equivalente aos valores canônicos do campo `Activity` de `Task`** do Azure DevOps:
-  - `Requirements`
-  - `Design`
-  - `Deployment`
-  - `Development`
-  - `Documentation`
-  - `Testing`
+* Arquivo único: `project-backlog/team.md`, em Markdown.
+* Deve conter uma tabela com as colunas: `Identificador (e-mail)`, `Nome` e `Papel`.
+* O `Identificador (e-mail)` e `Nome` são usados no formato `Nome <e-mail>` na coluna `Assigned To` do backlog consolidado e de seus recortes locais.
+* A identificação do **`Papel`** **deve ser equivalente aos valores canônicos do campo** **`Activity`** **de** **`Task`** do Azure DevOps:
+  * `Requirements`
+  * `Design`
+  * `Deployment`
+  * `Development`
+  * `Documentation`
+  * `Testing`
 
 Exemplo:
 
@@ -1262,79 +1332,87 @@ Exemplo:
 
 | Identificador (e-mail) | Nome | Papel |
 |---|---|---|
-| ana.souza@mpms.mp.br | Ana Souza | Requirements |
-| bruno.lima@mpms.mp.br | Bruno Lima | Design |
-| carla.dias@mpms.mp.br | Carla Dias | Development |
-| diego.melo@mpms.mp.br | Diego Melo | Development |
-| ana.paula@mpms.mp.br | Ana Paula | Deployment |
-| joao.reis@mpms.mp.br | João Reis | Documentation |
-| lia.matos@mpms.mp.br | Lia Matos | Testing |
+| anasouza@mpms.mp.br | Ana Souza | Requirements |
+| brunolima@mpms.mp.br | Bruno Lima | Design |
+| carladias@mpms.mp.br | Carla Dias | Development |
+| diegomelo@mpms.mp.br | Diego Melo | Development |
+| anapaula@mpms.mp.br | Ana Paula | Deployment |
+| joaoreis@mpms.mp.br | João Reis | Documentation |
+| liamatos@mpms.mp.br | Lia Matos | Testing |
 ```
 
 #### Papéis canônicos e responsabilidade sobre as atividades humanas
 
-| Papel (`team.md`) / Activity (`Task`) | Responsabilidade nas atividades humanas |
-|---|---|
-| `Requirements` | Decisões de negócio, esclarecimento de dúvidas (`OPEN-QUESTIONS.md`), revisão e aprovação funcional de specs |
-| `Design` | Validação de modelo de dados, decisões conceituais de arquitetura e padrões conceituais de interface |
-| `Deployment` | Preparação de ambientes, provisionamento de credenciais, configuração de acessos e integrações (`INT-XXX`) |
-| `Testing` | Definição de dados de homologação, criação de cenários de teste e validação de evidências |
-| `Documentation` | Produção, validação e revisão de artefatos documentais normativos |
-| `Development` | Apoio técnico de codificação preliminar, scaffolds e provas de conceito |
+| Papel (`team.md`) / Activity (`Task`) | Responsabilidade nas atividades humanas                                                                      |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `Requirements`                        | Decisões de negócio, esclarecimento de dúvidas (`OPEN-QUESTIONS.md`), revisão e aprovação funcional de specs |
+| `Design`                              | Validação de modelo de dados, decisões conceituais de arquitetura e padrões conceituais de interface         |
+| `Deployment`                          | Preparação de ambientes, provisionamento de credenciais, configuração de acessos e integrações (`INT-XXX`)   |
+| `Testing`                             | Definição de dados de homologação, criação de cenários de teste e validação de evidências                    |
+| `Documentation`                       | Produção, validação e revisão de artefatos documentais normativos                                            |
+| `Development`                         | Apoio técnico de codificação preliminar, scaffolds e provas de conceito                                      |
 
 #### Algoritmo de atribuição
 
 1. Para itens do tipo **`Epic`**, **`Feature`** e **`Product Backlog Item`**: deixar a coluna `Assigned To` **em branco**.
 2. Para itens do tipo **`Task`**:
-   - Obter o valor do campo `Activity` da `Task` (`Requirements`, `Design`, `Deployment`, `Development`, `Documentation` ou `Testing`).
-   - Localizar em `team.md` o(s) membro(s) cujo `Papel` seja idêntico ao `Activity` da `Task`.
-   - Preencher `Assigned To` no formato `Nome <e-mail>`.
-   - Se houver mais de um membro com o mesmo `Papel` (ex.: múltiplos membros em `Development`), distribuir as tarefas daquele papel de forma equilibrada (*round-robin*), preservando a ordem declarada no `team.md`.
+   * Obter o valor do campo `Activity` da `Task` (`Requirements`, `Design`, `Deployment`, `Development`, `Documentation` ou `Testing`).
+   * Localizar em `team.md` o(s) membro(s) cujo `Papel` seja idêntico ao `Activity` da `Task`.
+   * Preencher `Assigned To` no formato `Nome <e-mail>`.
+   * Se houver mais de um membro com o mesmo `Papel` (ex.: múltiplos membros em `Development`), distribuir as tarefas daquele papel de forma equilibrada (*round-robin*), preservando a ordem declarada no `team.md`.
 3. Se `team.md` não existir, ou não houver membro cadastrado com o `Papel` correspondente ao `Activity` da tarefa, deixar `Assigned To` em branco e registrar a lacuna como observação (não inventar membros nem e-mails).
 4. Reatribuir sempre que `team.md` ou o conjunto de atividades for alterado.
 
 ### 19.7 Formatação de descrições no Azure DevOps
 
 Para preservar a legibilidade no Azure DevOps:
-- A coluna `Description` deve conter tags HTML simples (`<b>`, `<br>`, `<ol>`, `<li>`, `<ul>`, `<code>`) para formatar seções, passos e referências.
-- Todo texto que contiver quebra de linha ou vírgula deve estar entre aspas duplas no padrão CSV.
+
+* A coluna `Description` deve conter tags HTML simples (`<b>`, `<br>`, `<ol>`, `<li>`, `<ul>`, `<code>`) para formatar seções, passos e referências. Os rótulos obrigatórios `Contexto`, `Objetivo`, `Critério de conclusão`, `Dependências`, `Referências` e `Notas` devem ser destacados com `<b>` e apresentados na ordem definida na seção 19.3.3.
+* Todo texto que contiver quebra de linha ou vírgula deve estar entre aspas duplas no padrão CSV.
 
 ### 19.8 Vínculo hierárquico (Epic → Feature → Product Backlog Item → Task) na importação
 
 No Azure DevOps, a coluna `Parent` **é ignorada** na importação por CSV — não é possível vincular um filho ao pai
 informando o ID do pai. O método oficial para importar a árvore hierárquica completa já vinculada é a **indentação de colunas de
 título** (`Title 1`, `Title 2`, `Title 3`, `Title 4`). Referência:
-https://learn.microsoft.com/en-us/azure/devops/boards/queries/import-work-items-from-csv#tree-items
+<https://learn.microsoft.com/en-us/azure/devops/boards/queries/import-work-items-from-csv#tree-items>
+
+Estas regras de importação aplicam-se somente ao `project-backlog/backlog.csv`. Os backlogs locais preservam a mesma hierarquia para rastreabilidade, mas não devem ser importados junto ao backlog consolidado.
 
 #### Como estruturar o CSV
 
-- Utilizar 4 colunas de título: `Title 1` (Epic), `Title 2` (Feature), `Title 3` (Product Backlog Item) e `Title 4` (Task).
-- Em cada linha de `Epic`: preencher `Title 1` e deixar `Title 2`, `Title 3` e `Title 4` vazios.
-- Em cada linha de `Feature`: deixar `Title 1` vazio, preencher `Title 2`, e deixar `Title 3` e `Title 4` vazios.
-- Em cada linha de `Product Backlog Item`: deixar `Title 1` e `Title 2` vazios, preencher `Title 3`, e deixar `Title 4` vazio.
-- Em cada linha de `Task`: deixar `Title 1`, `Title 2` e `Title 3` vazios, e preencher `Title 4`.
-- Cada item filho deve aparecer **imediatamente abaixo** do item pai ao qual pertence; o Azure DevOps vincula o item filho ao
+* Utilizar 4 colunas de título: `Title 1` (Epic), `Title 2` (Feature), `Title 3` (Product Backlog Item) e `Title 4` (Task).
+* Em cada linha de `Epic`: preencher `Title 1` e deixar `Title 2`, `Title 3` e `Title 4` vazios.
+* Em cada linha de `Feature`: deixar `Title 1` vazio, preencher `Title 2`, e deixar `Title 3` e `Title 4` vazios.
+* Em cada linha de `Product Backlog Item`: deixar `Title 1` e `Title 2` vazios, preencher `Title 3`, e deixar `Title 4` vazio.
+* Em cada linha de `Task`: deixar `Title 1`, `Title 2` e `Title 3` vazios, e preencher `Title 4`.
+* Cada item filho deve aparecer **imediatamente abaixo** do item pai ao qual pertence; o Azure DevOps vincula o item filho ao
   item pai mais próximo acima dele com nível de título imediatamente superior preenchido.
-- **Não incluir a coluna `ID`** para itens novos (o Azure atribui os IDs ao salvar). Incluir `ID` em itens novos gera
+
+* **Não incluir a coluna** **`ID`** para itens novos (o Azure atribui os IDs ao salvar). Incluir `ID` em itens novos gera
   erro.
-- **Não incluir a coluna `State`**: itens novos entram no estado inicial padrão (`New`).
+
+* **Não incluir a coluna** **`State`**: itens novos entram no estado inicial padrão (`New`).
 
 #### Exemplo
 
 ```csv
 Work Item Type,Title 1,Title 2,Title 3,Title 4,Priority,Activity,Tags,Assigned To,Description
-Epic,Portal de Atendimento - Versão 1.0.0,,,,1,,,,,<b>Contexto:</b> Épico raiz representando o produto e versão.<br><b>Referências:</b> requirements/main_requirements.md
-Feature,,0001 - Gestão de solicitações,,,1,,,,,<b>Contexto:</b> Funcionalidade de gestão de solicitações.<br><b>Referências:</b> specs/frontend/0001-gestao-solicitacoes, specs/backend/0001-gestao-solicitacoes
-Product Backlog Item,,,Decisões de negócio pendentes,,1,,Decisão de negócio; Q-001,,<b>Contexto:</b> Agrupa decisões humanas para desbloquear o desenvolvimento.<br><b>Referências:</b> specs/OPEN-QUESTIONS.md
-Task,,,,Definir perfis de autorização (Q-001),2,Requirements,Decisão de negócio; Autorização; Q-001,Ana Souza <ana.souza@mpms.mp.br>,"<b>Contexto:</b> Perfis não definidos.<br><b>Passos:</b><ol><li>Levantar perfis.</li><li>Registrar em OPEN-QUESTIONS.md.</li></ol><b>Referências:</b> Q-001"
-Task,,,,Definir política de retenção/LGPD (Q-002),2,Requirements,Decisão de negócio; LGPD; Q-002,João Reis <joao.reis@mpms.mp.br>,"<b>Contexto:</b> Política de retenção não documentada.<br><b>Passos:</b><ol><li>Consultar encarregado.</li><li>Registrar em OPEN-QUESTIONS.md.</li></ol><b>Referências:</b> Q-002"
+Epic,Portal de Atendimento - Versão 1.0.0,,,,1,,,,"<b>Contexto:</b> Épico raiz que representa o produto e sua versão.<br><b>Objetivo:</b> Organizar as atividades humanas da versão.<br><b>Critério de conclusão:</b> Features da versão registradas e vinculadas ao Epic.<br><b>Dependências:</b> requirements/main_requirements.md.<br><b>Referências:</b> requirements/main_requirements.md.<br><b>Notas:</b> Nenhuma."
+Feature,,0001 - Gestão de solicitações,,,1,,,,"<b>Contexto:</b> Funcionalidade de gestão de solicitações.<br><b>Objetivo:</b> Organizar atividades humanas necessárias para a funcionalidade.<br><b>Critério de conclusão:</b> PBIs e Tasks vinculados à Feature.<br><b>Dependências:</b> Specs FE-0001 e BE-0001.<br><b>Referências:</b> FE-0001; BE-0001.<br><b>Notas:</b> Nenhuma."
+Product Backlog Item,,,Decisões de negócio pendentes,,1,,Decisão de negócio; Q-001,,"<b>Contexto:</b> Há decisões pendentes que bloqueiam a geração do código.<br><b>Objetivo:</b> Agrupar decisões humanas da funcionalidade.<br><b>Critério de conclusão:</b> Decisões registradas e specs atualizadas.<br><b>Dependências:</b> Q-001; Q-002.<br><b>Referências:</b> specs/OPEN-QUESTIONS.md; FE-0001; BE-0001.<br><b>Notas:</b> Nenhuma."
+Task,,,,Definir perfis de autorização (Q-001),2,Requirements,Decisão de negócio; Autorização; Q-001,Ana Souza <anasouza@mpms.mp.br>,"<b>Contexto:</b> Perfis de autorização não estão definidos.<br><b>Objetivo:</b> Definir permissões por perfil.<br><b>Critério de conclusão:</b> Perfis e permissões aprovados e registrados em OPEN-QUESTIONS.md e nas specs.<br><b>Dependências:</b> Nenhuma.<br><b>Referências:</b> Q-001; FE-0001; BE-0001.<br><b>Notas:</b> Nenhuma.<br><b>Passos:</b><ol><li>Levantar perfis.</li><li>Registrar a decisão em OPEN-QUESTIONS.md.</li></ol>"
+Task,,,,Definir política de retenção/LGPD (Q-002),2,Requirements,Decisão de negócio; LGPD; Q-002,João Reis <joaoreis@mpms.mp.br>,"<b>Contexto:</b> Política de retenção não está documentada.<br><b>Objetivo:</b> Definir a política aplicável aos dados das solicitações.<br><b>Critério de conclusão:</b> Política aprovada e registrada em OPEN-QUESTIONS.md e nas specs.<br><b>Dependências:</b> Consulta ao encarregado de dados.<br><b>Referências:</b> Q-002; BE-0001.<br><b>Notas:</b> Nenhuma.<br><b>Passos:</b><ol><li>Consultar o encarregado.</li><li>Registrar a decisão em OPEN-QUESTIONS.md.</li></ol>"
+Task,,,,Validar cenários de homologação das solicitações,2,Testing,Homologação; Critério de aceite; FE-0001,Lia Matos <liamatos@mpms.mp.br>,"<b>Contexto:</b> A funcionalidade requer validação humana dos critérios de aceite.<br><b>Objetivo:</b> Confirmar cenários de homologação para a gestão de solicitações.<br><b>Critério de conclusão:</b> Cenários aprovados e evidências de homologação registradas.<br><b>Dependências:</b> Perfis de autorização e política de retenção definidos.<br><b>Referências:</b> FE-0001; BE-0001; Q-001; Q-002.<br><b>Notas:</b> Nenhuma."
 ```
 
 #### Observações
 
-- A importação é feita em **Boards > Queries > Import work items**; os itens entram sem ID, em estado não salvo, para
+* A importação é feita em **Boards > Queries > Import work items**; os itens entram sem ID, em estado não salvo, para
   revisão antes de salvar.
-- Para preservar a formatação HTML da `Description`, manter as tags HTML na célula (ver seção 19.7).
-- Identidades em `Assigned To` devem usar o formato `Nome <e-mail>`; se o Azure não reconhecer a identidade, o campo é
+
+* Para preservar a formatação HTML da `Description`, manter as tags HTML na célula (ver seção 19.7).
+* Identidades em `Assigned To` devem usar o formato `Nome <e-mail>`; se o Azure não reconhecer a identidade, o campo é
   sinalizado como erro e deve ser corrigido antes de salvar.
-- Limite de 1000 itens por importação; dividir em múltiplos arquivos se necessário.
+
+* Limite de 1000 itens por importação; dividir em múltiplos arquivos se necessário.
