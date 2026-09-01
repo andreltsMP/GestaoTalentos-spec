@@ -36,7 +36,7 @@
 ## Fase 0 — Fundação (transversal, precede as features)
 
 - [ ] **F0.1 — Shell da aplicação** `❓ shared-ui` — Header (70px, friso `#337259`) + Sidebar (250px) conforme `DESIGN.md`, com os 5 itens de navegação do mockup (Meu Perfil, Busca de Talentos, Cursos e Certificados, Qualificação/Progressão, Permuta de Lotação). Depende de confirmar se o `BaseLayout` do `@mpms/shared-ui` já fornece esse shell; substituir/adaptar `Header.tsx`/`Sidebar.tsx`/`PortalMenu.tsx` genéricos (hoje com `style={{}}` inline, proibido).
-- [ ] **F0.2 — Rebrand** `▶ livre` — Trocar "Exemplo Frontend" por "Sistema de Gestão de Talentos" em `layout.tsx` (metadata), `package.json` (`name`), página de login e textos de layout.
+- [x] **F0.2 — Rebrand** `▶ livre` — Feito em `layout.tsx` (metadata), `package.json` (`name`), `login/page.tsx` e texto de marca do `Header.tsx`. Nav e estrutura do shell (Sidebar/menu) seguem para F0.1.
 - [ ] **F0.3 — Componentes de estado** `▶ livre` — `src/components/shared/`: `LoadingState`, `EmptyState` (border-dashed border-2, ícone `text-4xl`), `ErrorState` (sem stack trace), `SemPermissao`.
 - [ ] **F0.4 — Hook `usePermissao`** `⛔ permissionamento` — Consumir o microsserviço `_git/permissionamento` (AGENTS.md). Depende do contrato desse serviço.
 - [ ] **F0.5 — Toast centralizado** `▶ livre` — Provider de `Toast` (PrimeReact) em `src/service/`, mensagens em português, para feedback de escrita.
@@ -51,19 +51,19 @@ Rotas: `/(portal)/perfil` (próprio), `/(portal)/perfil/[id]` (leitura, origem: 
 Aberto: `❓ Q-016` (retenção/exclusão LGPD — pode exigir ação de exportação/exclusão de dados).
 
 - [ ] **T1.1 — `interfaces/Perfil.ts`** `⛔ BE-0001` — `Perfil`, `Lotacao`, `Idioma`, `Competencia`, `Experiencia`, `Comissao`, `SolicitacaoAtualizacao`. Campos de cada seção dependem do modelo de dados do BE-0001.
-- [ ] **T1.2 — `enums/StatusSolicitacao.ts`** `▶ livre` — `AGUARDANDO_VALIDACAO | APROVADA | RECUSADA`.
+- [x] **T1.2 — `enums/StatusSolicitacaoEnum.ts`** `▶ livre` — `AguardandoValidacao | Aprovada | Recusada`.
 - [ ] **T1.3 — Schemas Zod por seção** `⛔ BE-0001` — idioma, competência, experiência, comissão (campos pendentes de contrato).
 - [ ] **T1.4 — `service/perfil.service.ts` + actions** `⛔ BE-0001` — `getPerfilProprio`, `getPerfilPorId`, `adicionarItemSecao`, `enviarParaValidacao`, `listarSolicitacoes`. Validar resposta com Zod.
-- [ ] **T1.5 — `ProfileHeader`** `▶ livre` — Avatar (`border-circle`), nome, cargo, lotação (nome + cidade) em destaque (UI-001).
-- [ ] **T1.6 — `ProfileSectionCard`** `▶ livre` — Card genérico: título + botão "+" (≥40px) + lista de `item-row` (UI-002).
+- [x] **T1.5 — `components/perfil/PerfilHeader.tsx`** `▶ livre` — Avatar (`Avatar` PrimeReact, `shape="circle"`), nome, cargo, lotação (nome + cidade) (UI-001). Props simples; candidato ao DS.
+- [x] **T1.6 — `components/perfil/PerfilSecaoCard.tsx`** `▶ livre` — Card genérico: título + botão "+" (`aria-label`, ≥40px) + `children` como linhas; variante de estado vazio (border-dashed) (UI-002). Candidato ao DS.
 - [ ] **T1.7 — Formulários inline por seção** `⛔ BE-0001` — RHF + Zod, label associado, `focus-ring`, sem navegação de página (fluxo principal). Depende de T1.3.
-- [ ] **T1.8 — Badge de status por item** `▶ livre` — pendente/aprovada/recusada com a paleta semântica do `DESIGN.md` (UI-003).
+- [x] **T1.8 — `components/perfil/StatusSolicitacaoBadge.tsx`** `▶ livre` — `Tag` PrimeReact com `severity` (warning/success/secondary) + ícone, a partir do enum `StatusSolicitacao` (UI-003). Cores via tema do DS (sem hex arbitrário).
 - [ ] **T1.9 — "Minhas Solicitações"** `⛔ BE-0001` — Tabela: descrição + status + data de envio (UI-004). Depende de T1.4.
 - [ ] **T1.10 — Página `perfil/page.tsx`** `⛔ BE-0001` — Orquestra hooks; estados loading/vazio/erro/sucesso (Estados de interface).
 - [ ] **T1.11 — Página `perfil/[id]/page.tsx`** `⛔ BE-0001` — Modo leitura, sem controles de edição; estado "sem permissão" ao tentar editar terceiro (UI-005, REQ-SEC-001).
 - [ ] **T1.12 — Bloqueio de edição de item "aguardando validação"** `⛔ BE-0001` — Fluxo de erro da spec: impedir edição direta, exibir aviso, preservar solicitação em andamento.
 - [ ] **T1.13 — Testes** `▶ livre / ⛔ parcial` — RTL: "+" adiciona item sem navegação; render dos 3 status; modo leitura sem "+". Casos que tocam service dependem de T1.4.
-- [ ] **T1.14 — Divergência mockup × `DESIGN.md`** `▶ livre` — Mockup usa `--surface-ground: #fafafa`; usar `#f7f4ed` do `DESIGN.md`. Registrar a divergência em `../OPEN-QUESTIONS.md`.
+- [x] **T1.14 — Divergência mockup × `DESIGN.md`** `▶ livre` — Registrada como Q-017 em `../OPEN-QUESTIONS.md`; implementação segue `#f7f4ed` do `DESIGN.md`.
 
 **Critérios de aceite (spec):** CA-FE-001 (perfil consolidado), CA-FE-002 ("+" inline sem navegação), CA-FE-003 (3 status na aba de solicitações), CA-FE-004 (mockup sincronizada + `DESIGN.md`).
 
