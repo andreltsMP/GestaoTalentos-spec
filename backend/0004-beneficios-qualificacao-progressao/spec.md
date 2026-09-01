@@ -4,13 +4,13 @@
 
 - ID funcional: 0004
 - Contexto: Backend
-- Status: Draft
+- Status: Approved (entrega em 2 fatias — ver ADR 0001)
 - Criado em: 2026-08-27
-- Última atualização: 2026-08-27
+- Última atualização: 2026-09-01 (aprovada)
 - Fonte principal: `requirements/main_requirements.md`
 - Artefatos complementares: `requirements/artifacts/Gestao de Talentos.docx`
 - Spec frontend relacionada: `specs/frontend/0004-beneficios-qualificacao-progressao/spec.md`
-- Questões em aberto: Q-016
+- Questões em aberto: Q-017 (contrato de integração com o Turmalina) — bloqueia apenas a fatia (ii); ver `docs/adr/0001-integracao-turmalina.md`
 - Responsável pela revisão: Comissão de Gestão de Competências
 
 ## Resumo
@@ -70,7 +70,8 @@ Garantir que apenas cursos elegíveis (validados e ainda não utilizados para a 
 | SEC-001 | Autenticação exclusiva via SSO institucional | REQ-SEC-001 |
 | SEC-002 | Apenas usuários com papel "RH" podem aprovar/recusar solicitações de benefício | REQ-FUNC-008 |
 | PRIV-001 | Dados da solicitação de benefício devem ser tratados em conformidade com a LGPD | REQ-PRIV-002 |
-| AUD-001 | Toda aprovação/recusa de benefício deve ser registrada em trilha de auditoria (autor, data/hora, decisão) | REQ-AUD-001 |
+| PRIV-002 | Retenção (Q-016): a solicitação de benefício é mantida enquanto o servidor tiver vínculo ativo com o MPMS. Ao encerramento do vínculo, os dados pessoais da solicitação são excluídos; os registros da trilha de auditoria correlatos são anonimizados (não removidos), preservando data/hora, decisão e autor institucional sem PII | REQ-PRIV-002 |
+| AUD-001 | Toda aprovação/recusa de benefício deve ser registrada em trilha de auditoria (autor, data/hora, decisão). Os registros são preservados após o encerramento do vínculo do servidor, de forma anonimizada quanto à PII do servidor desligado (PRIV-002) | REQ-AUD-001 |
 
 ## Dados e integrações
 
@@ -113,13 +114,14 @@ Garantir que apenas cursos elegíveis (validados e ainda não utilizados para a 
 | Tipo | Dependência | Impacto | Situação |
 |---|---|---|---|
 | Funcionalidade | Spec backend 0002 (status de utilização do curso) | Fonte de elegibilidade da solicitação | Ativa |
-| Integração | Contrato/credenciais de integração com o Turmalina | Necessário para notificação de benefício aprovado | Pendente de preparação técnica (ver backlog) |
+| Integração | Contrato/credenciais de integração com o Turmalina | Necessário para a fatia (ii): implementação do adaptador de notificação de benefício aprovado | Contrato inexistente — ver ADR 0001 e Q-017. Fatia (i) implementa porta `NotificadorTurmalina` inerte |
 
 ## Questões em aberto
 
 | ID | Pergunta | Impacto | Status |
 |---|---|---|---|
-| Q-016 | Qual o prazo de retenção dos dados de solicitação de benefício? | Define política de retenção de DATA-001 | Aberta |
+| Q-016 | Qual o prazo de retenção dos dados de solicitação de benefício? | Define política de retenção de DATA-001 | Resolvida em 2026-09-01 — ver PRIV-002 (retenção enquanto vínculo ativo; exclusão + anonimização da auditoria ao encerrar) |
+| Q-017 | Qual o contrato técnico da integração com o Turmalina? | Bloqueia a fatia (ii) — adaptador de notificação | Aberta — ver `docs/adr/0001-integracao-turmalina.md` |
 
 ## Rastreabilidade de origem
 
@@ -136,3 +138,5 @@ Garantir que apenas cursos elegíveis (validados e ainda não utilizados para a 
 | Data | Alteração | Motivo | Responsável |
 |---|---|---|---|
 | 2026-08-27 | Criação inicial | Extração de requisitos de origem (RF-008, RF-009, RN-005, RN-007 a RN-009, INT-001) | Agente |
+| 2026-09-01 | Incorporação da decisão Q-016 (retenção/exclusão LGPD): PRIV-002 e ajuste de AUD-001. Mantém status Draft por pendência técnica do contrato de integração com o Turmalina (INT-001) | Decisão humana (sessão de planejamento) | Agente |
+| 2026-09-01 | Spec aprovada; status Draft → Approved com entrega em 2 fatias (ADR 0001): (i) domínio + porta `NotificadorTurmalina` inerte; (ii) adaptador quando houver contrato (Q-017) | Decisão humana | Agente |

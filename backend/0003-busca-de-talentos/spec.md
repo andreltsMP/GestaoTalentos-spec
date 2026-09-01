@@ -4,13 +4,13 @@
 
 - ID funcional: 0003
 - Contexto: Backend
-- Status: Draft
+- Status: Approved
 - Criado em: 2026-08-27
-- Última atualização: 2026-08-27
+- Última atualização: 2026-09-01 (aprovada)
 - Fonte principal: `requirements/main_requirements.md`
 - Artefatos complementares: `requirements/artifacts/Gestao de Talentos.docx`
 - Spec frontend relacionada: `specs/frontend/0003-busca-de-talentos/spec.md`
-- Questões em aberto: Q-013
+- Questões em aberto: nenhuma (Q-013 resolvida em 2026-09-01)
 - Responsável pela revisão: Comissão de Gestão de Competências
 
 ## Resumo
@@ -24,7 +24,7 @@ Retornar, de forma performática, os servidores aderentes aos filtros aplicados,
 ## Escopo incluído
 
 - Consulta de servidores com filtros combináveis: área de formação, nível de formação, curso, competências, lotação, idiomas.
-- Cálculo do percentual de correspondência de cada servidor em relação aos filtros aplicados (fórmula pendente — Q-013).
+- Cálculo do percentual de correspondência de cada servidor em relação aos filtros aplicados: proporção simples de filtros atendidos sobre o total de filtros selecionados, com peso igual entre tipos de filtro (Q-013).
 - Ocultação de servidores com 0% de correspondência quando mais de um filtro é aplicado.
 - Suporte a ordenação por Correspondência, Lotação, Alfabético e Nível de Formação, com critério principal e secundário.
 
@@ -55,7 +55,7 @@ Retornar, de forma performática, os servidores aderentes aos filtros aplicados,
 | ID | Regra | Origem |
 |---|---|---|
 | RN-001 | O percentual de correspondência é calculado apenas quando mais de um filtro é selecionado; com um único filtro, o resultado é binário (atende/não atende) | REQ-RN-013 |
-| RN-002 | A fórmula exata de cálculo do percentual está pendente de definição (Q-013); até a decisão, nenhuma implementação deve assumir peso arbitrário entre filtros | Q-013 |
+| RN-002 | Fórmula do percentual de correspondência (Q-013): `% = (nº de filtros selecionados que o servidor atende) ÷ (nº total de filtros selecionados) × 100`. Todos os tipos de filtro (formação, curso, competências, lotação, idiomas) têm peso igual. Um filtro com seleção múltipla conta como atendido se o servidor satisfaz ao menos um dos valores selecionados naquele filtro (booleano por filtro, sem correspondência parcial dentro do filtro). Resultado arredondado para inteiro | REQ-RN-013 |
 
 ## Segurança, privacidade e auditoria
 
@@ -102,14 +102,14 @@ Nenhuma integração externa é necessária para esta funcionalidade.
 
 | Tipo | Dependência | Impacto | Situação |
 |---|---|---|---|
-| Negócio | Fórmula de cálculo do percentual de correspondência (Q-013) | Bloqueia implementação de RF-002/RN-001 com precisão | Pendente de decisão humana |
+| Negócio | Fórmula de cálculo do percentual de correspondência (Q-013) | Definida em RN-002: proporção simples de filtros atendidos, peso igual entre tipos | Resolvida em 2026-09-01 |
 | Funcionalidade | Specs backend 0001 e 0002 (dados de perfil e cursos) | Fonte de dados para indexação da busca | Ativa |
 
 ## Questões em aberto
 
 | ID | Pergunta | Impacto | Status |
 |---|---|---|---|
-| Q-013 | Qual a fórmula exata de cálculo do percentual de correspondência? | Bloqueia a implementação de RF-002 até definição | Aberta |
+| — | Nenhuma. Q-013 resolvida em 2026-09-01 (ver `docs/specs/OPEN-QUESTIONS.md`). | — | — |
 
 ## Rastreabilidade de origem
 
@@ -125,3 +125,6 @@ Nenhuma integração externa é necessária para esta funcionalidade.
 | Data | Alteração | Motivo | Responsável |
 |---|---|---|---|
 | 2026-08-27 | Criação inicial | Extração de requisitos de origem (RF-012 a RF-014, RN-013, RN-014) | Agente |
+| 2026-09-01 | Incorporação da decisão Q-013: fórmula do percentual de correspondência fixada em RN-002 (proporção simples, peso igual); status Draft → Review Required | Decisão humana (sessão de planejamento) | Agente |
+| 2026-09-01 | Spec aprovada; status Review Required → Approved | Decisão humana | Agente |
+| 2026-09-01 | Implementação da Fase 3: `BuscaTalentosService` + `CorrespondenciaCalculator` (Q-013), `BuscaServidorRepository` (projeções JPQL), endpoint `POST /api/v1/busca/servidores`, ordenação principal/secundária, auditoria `CONSULTA` (AUD-001). Sem migration. Interpretações: filtro "formação" exige um mesmo curso atendendo área+nível; curso/lotação por nome; só cursos VALIDADO indexados; avaliação em memória (RNF-001, ≤2.000). 52 testes no total | Sessão de implementação | Agente |
