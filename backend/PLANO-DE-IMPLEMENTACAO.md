@@ -170,6 +170,24 @@ Entregáveis:
 
 Depende de: Fase 2. **INT-001 bloqueado → ADR 0001.** Critérios: CA-BE-001..004 (exceto a parte de comunicação efetiva ao Turmalina).
 
+> **Progresso (2026-09-02): fatia (i) implementada.** `mvn test` = **62 testes verdes**;
+> Flyway aplica `V4` (`solicitacao_beneficio`); `POST /api/v1/beneficios/solicitacoes`
+> responde 401 sem token; app sobe (bean inerte do Turmalina carrega via
+> `@ConditionalOnProperty turmalina.enabled=false`).
+>
+> - `SolicitacaoBeneficio` (tipo QUALIFICACAO/PROGRESSAO, curso, servidor, status
+>   reaproveitando `StatusSolicitacao`), migration `V4`.
+> - Elegibilidade RN-001 (curso VALIDADO + "não utilizado" para a finalidade) e
+>   RN-002 (capacitação só progressão); bloqueia 2ª solicitação pendente para o
+>   mesmo curso+tipo (extensão conservadora, análoga à RN-002 de BE-0001).
+> - Decisão do RH (SEC-002): aprovar → marca o curso como utilizado (RF-005),
+>   chama `NotificadorTurmalina.notificarBeneficioAprovado` (RF-006), audita
+>   (AUD-001); recusar exige motivo e **não** notifica (RN-003 / CA-BE-003).
+> - Porta `NotificadorTurmalina` + `NotificadorTurmalinaInerte` (no-op logado);
+>   `turmalina.enabled` em `application.yml` (default false) prepara a fatia (ii).
+> - Q-016/PRIV-002: `solicitacao_beneficio` não guarda PII direta (só FKs + enums);
+>   coberto pela anonimização do `Servidor` na Fase 1 — sem passo extra.
+
 Entregáveis:
 
 - **Entidade / migration `V5`**: `SolicitacaoBeneficio` (tipo `QUALIFICACAO|PROGRESSAO`, curso vinculado, status, decisão do RH).
