@@ -7,7 +7,8 @@
 - As specs de backend BE-0001 a BE-0005 foram **aprovadas** (2026-09-01) e **implementadas localmente** pelo agente de backend (BE-0001..0003 completas; BE-0004/0005 fatia (i) — domínio + porta Turmalina inerte). Ver `../backend/PLANO-DE-IMPLEMENTACAO.md`.
 - **Contrato de API — resolvido pela opção (b) (2026-09-02).** Fonte = OpenAPI vivo do backend (`${NEXT_PUBLIC_API_BASE_URL}/v3/api-docs`, base dev `http://localhost:8080/api/gestao-talento`). Snapshot derivado do código-fonte (`GestaoTalento-backend@defcbbe`) em **`../../contracts/backend-api.md`**; regeneração do JSON via `npm run openapi:fetch` (`scripts/fetch-openapi.mjs`) com o backend no ar. `src/interfaces/*` e schemas Zod passam a ser derivados desse contrato — **a camada de dados de FE-0001/0002/0003 está desbloqueada**. Divergência contrato × tela → registrar em `../OPEN-QUESTIONS.md`, não improvisar.
 - **Questões abertas: nenhuma.** Q-012 a Q-016 resolvidas pelo backend em 2026-09-01; Q-017 (contrato da integração Turmalina) resolvida em 2026-09-02 — contrato provisório REST síncrono, ação pendente do agente de backend (fatia ii de BE-0004/0005; o frontend nunca fala com o Turmalina); Q-018 (cor de fundo de FE-0001) resolvida — segue o `DESIGN.md` `#f7f4ed`. Ver `../OPEN-QUESTIONS.md` › Decisões respondidas.
-- **Progresso 2026-09-02:** **Fase 0 ✅** · **FE-0001 ✅** · **FE-0002 ✅** (T2.1–T2.10) · **FE-0003 ✅** (T3.1–T3.7) · **FE-0004 ✅** (T4.1–T4.6: elegibilidade RN-007/EXC-001, solicitar qualificação/progressão, acompanhamento). Pendente T4.7 (tela de decisão do RH — fora da lista original). **Próximo:** FE-0005 (Permuta de Lotação).
+- **Progresso 2026-09-02:** **Fase 0 ✅** · **FE-0001 ✅** · **FE-0002 ✅** (T2.1–T2.10) · **FE-0003 ✅** (T3.1–T3.7) · **FE-0004 ✅** (T4.1–T4.6) · **FE-0005 ✅** (T5.1–T5.7: nova permuta, aba pública anônima Q-015, "minhas" com stepper FB-003 + confirmar/recusar aceite). **Todas as 5 specs de frontend têm o lado do servidor implementado e verificado** (`jest` 55, `build` verde).
+- **Telas de papéis administrativos ainda não implementadas** (fora das listas T#.1–T#.n; dependem de `usePermissao` real): FE-0002 T2.10 (Comissão) **feita**; **pendentes:** FE-0004 T4.7 (decisão do RH sobre benefício), FE-0005 T5.8 (aprovação de Chefia e validação do RH sobre permuta).
 - **✅ Verificação (2026-09-02):** `npx tsc --noEmit` OK · `npm run lint` OK (0 erros; 1 warning pré-existente em `error.tsx`) · `npm test` 20/20 em 5 suítes · `npm run build` OK (rotas `/`, `/login`, `/perfil`, `/api/auth/[...]`, middleware). Fase 0 e FE-0001 T1.1–T1.4 verificadas.
 
 ## Specs
@@ -18,7 +19,7 @@
 | 2 | 0002 | Cursos e Certificados | **Implementada** | Sincronizada | 0001 | — | ✅ T2.1–T2.10 (tsc/lint/jest 33/build verdes). Falta: verificação e2e contra o backend |
 | 3 | 0003 | Busca de Talentos | **Implementada** | Sincronizada | 0001, 0002 | — | ✅ T3.1–T3.7 (tsc/lint/jest 38/build verdes). Falta: verificação e2e contra o backend |
 | 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | **Implementada** | Sincronizada | 0002 | — | ✅ T4.1–T4.6 (tsc/lint/jest 48/build). Falta T4.7 (decisão do RH); e2e contra o backend |
-| 5 | 0005 | Permuta de Lotação | Aprovada | Sincronizada | 0001 | ✅ contrato (BE-0005) | Depois de FE-0001. Aba pública `GET /permutas/abertas` é anônima; identidade só após aceite mútuo |
+| 5 | 0005 | Permuta de Lotação | **Implementada** | Sincronizada | 0001 | — | ✅ T5.1–T5.7 (tsc/lint/jest 55/build). Falta T5.8 (chefia/RH); e2e contra o backend |
 
 ## Regra de execução
 
@@ -128,10 +129,13 @@ Contrato: `docs/contracts/backend-api.md` › BE-0004. `status` reusa `StatusSol
 
 Rota: `/(portal)/permutas`. Dep.: FE-0001. Q-015 resolvida (backend, 2026-09-01): a aba pública (`GET /api/v1/permutas/abertas`) é **anônima** — só lotação/cidade origem-destino + status; identidade só a partir de `AGUARDANDO_APROVACAO_CHEFIA` (aceite mútuo confirmado). Q-016 resolvida; Q-017/Turmalina é interno ao backend.
 
-- [ ] **T5.1 — Interfaces/enums** `⛔ BE-0005` — `SolicitacaoPermuta`, estados do fluxo (`AGUARDANDO_ACEITE_USUARIO | AGUARDANDO_APROVACAO_CHEFIA | AGUARDANDO_VALIDACAO_RH | APROVADA | RECUSADA`).
-- [ ] **T5.2 — Formulário de solicitação** `⛔ BE-0005` — Seleção de lotação ou cidade desejada.
-- [ ] **T5.3 — `service/permutas.service.ts`** `⛔ BE-0005` — Criar solicitação; aceitar/recusar; consultar aba pública.
-- [ ] **T5.4 — Aba "Solicitações" (minhas)** `⛔ BE-0005` — Status em todas as etapas do fluxo FB-003; ações contextuais (aceitar/confirmar/recusar) conforme estado.
-- [ ] **T5.5 — Aba pública "Permutas"** `⛔ BE-0005` — Lista de permutas em aberto visível a todos. Q-015 respondida: exibir **somente lotação/cidade de origem e destino**; sem nome ou identificação do solicitante até o aceite mútuo.
-- [ ] **T5.6 — Regras de UI do fluxo** `⛔ BE-0005` — Refletir RN-010 (bloqueio 180 dias), RN-011 (não re-solicitar permuta recusada pelo próprio), RN-012 (não reaceitar) — desabilitando/ocultando ações; proteção real é server-side.
-- [ ] **T5.7 — Estados + testes** `▶ livre / ⛔ parcial` — loading/vazio/erro/sucesso; testes de renderização por estado do fluxo.
+Contrato: `docs/contracts/backend-api.md` › BE-0005. `StatusPermuta` tem 6 estados (inclui `AGUARDANDO_CONFIRMACAO_INICIAL`).
+
+- [x] **T5.1 — Interfaces/enums** — `interfaces/Permuta.ts` (`CriarPermutaRequest`, `ConfirmacaoAceiteRequest`, `DecisaoPermutaRequest`, `Permuta`, `PermutaAberta`) + `enums/StatusPermutaEnum.ts` (6 estados + rótulos).
+- [x] **T5.2 — Formulário de solicitação** — `NovaPermuta` (RHF + Zod: `destinoLotacao`/`destinoCidade`, **ao menos um** — `novaPermutaFormSchema`), collapsible, "Publicar solicitação".
+- [x] **T5.3 — `service/permuta.service.ts` + `actions/permuta.actions.ts`** — `listarMinhasPermutas` / `listarPermutasAbertas` (Zod) + `criarPermuta` / `aceitarPermuta` / `confirmarAceite` + `revalidatePath('/permutas')`.
+- [x] **T5.4 — "Minhas solicitações"** — `MinhasPermutas`/`ItemMinhaPermuta`: `EtapasPermuta` (stepper FB-003: Aceite → Chefia → RH, etapa atual por `StatusPermuta`) + `PermutaStatusBadge` (6 estados); ação contextual **Confirmar / Recusar aceite** apenas em `AGUARDANDO_CONFIRMACAO_INICIAL` (o backend valida se o usuário é o solicitante). Motivo exibido em `RECUSADA`.
+- [x] **T5.5 — Permutas em aberto** — `PermutasAbertas`/`ItemPermutaAberta`: `RotaPermuta` (origem→destino, **sem identidade** — Q-015) + "Iniciar permuta" = `aceitarPermuta`.
+- [x] **T5.6 — Regras de UI do fluxo** — ações oferecidas só conforme o `status` atual; RN-010/011/012 (bloqueio 180 d, não re-solicitar/reaceitar) **não estão nas respostas do contrato** → o FE não consegue pré-desabilitar por esse estado; a violação é rejeitada pelo backend e o erro aparece via toast. Documentado.
+- [x] **T5.7 — Estados + testes** — carregando/vazio/erro/sucesso; `tests/components/permutas/Permutas.test.tsx`: etapa atual do stepper, stepper oculto em `RECUSADA`, ações só em `AGUARDANDO_CONFIRMACAO_INICIAL`, aba pública anônima + vazio, schema exige lotação|cidade. **Verificado:** tsc/lint/jest 55/build OK.
+- [ ] **T5.8 — Telas de decisão de Chefia e RH** — **não implementadas** (fora da lista T5.1–T5.7). Endpoints `POST /api/v1/permutas/{id}/aprovacao-chefia` e `/validacao-rh` (`DecisaoPermutaRequest`). Dependem de `usePermissao` real (papéis Chefia / RH).
