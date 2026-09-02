@@ -4,9 +4,9 @@
 
 - ID funcional: 0001
 - Contexto: Frontend
-- Status: Draft
+- Status: Aprovada
 - Criado em: 2026-08-27
-- Última atualização: 2026-08-27
+- Última atualização: 2026-09-01
 - Fonte principal: `requirements/main_requirements.md`
 - Artefatos complementares: `requirements/artifacts/Gestao de Talentos.docx`
 - Design System: `DESIGN.md`
@@ -156,3 +156,4 @@ Permitir que o servidor visualize e mantenha seu próprio perfil profissional de
 |---|---|---|---|
 | 2026-08-27 | Criação inicial | Extração de requisitos de origem (RF-001 a RF-004, RF-015) | Agente |
 | 2026-08-27 | Mockup criada e sincronizada | Consolidação da spec | Agente |
+| 2026-09-01 | Status alterado de Draft para Aprovada | Aprovação humana das specs de frontend para início da implementação | Usuário |

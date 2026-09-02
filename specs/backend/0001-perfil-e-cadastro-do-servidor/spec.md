@@ -4,13 +4,13 @@
 
 - ID funcional: 0001
 - Contexto: Backend
-- Status: Draft
+- Status: Approved
 - Criado em: 2026-08-27
-- Última atualização: 2026-08-27
+- Última atualização: 2026-09-01 (aprovada)
 - Fonte principal: `requirements/main_requirements.md`
 - Artefatos complementares: `requirements/artifacts/Gestao de Talentos.docx`
 - Spec frontend relacionada: `specs/frontend/0001-perfil-e-cadastro-do-servidor/spec.md`
-- Questões em aberto: Q-016
+- Questões em aberto: nenhuma (Q-016 resolvida em 2026-09-01)
 - Responsável pela revisão: Comissão de Gestão de Competências
 
 ## Resumo
@@ -27,6 +27,7 @@ Garantir o armazenamento consistente do perfil do servidor, o controle de acesso
 - Atualização do próprio perfil pelo servidor autenticado.
 - Fluxo de solicitação e validação de atualizações de cadastro por RH e/ou Comissão de Gestão de Competências, com estados "aguardando validação", "aprovada", "recusada".
 - Disponibilização de consulta de perfil de qualquer servidor (leitura), para uso pela funcionalidade de busca (spec 0003).
+- Exclusão dos dados pessoais do servidor ao encerramento do vínculo com o MPMS, com anonimização dos registros de auditoria correlatos (PRIV-002, Q-016).
 
 ## Escopo não incluído
 
@@ -68,7 +69,8 @@ Garantir o armazenamento consistente do perfil do servidor, o controle de acesso
 | SEC-001 | Autenticação exclusiva via SSO institucional (Active Directory); nenhuma senha local deve ser armazenada para servidores | REQ-SEC-001 |
 | SEC-002 | O servidor autenticado só pode alterar seu próprio registro de perfil; tentativas de alteração de registro de terceiros devem ser rejeitadas | RN-001 |
 | PRIV-001 | Dados pessoais do servidor (foto, nome, cargo, lotação, formação, experiência) devem ser tratados em conformidade com a LGPD | REQ-PRIV-002 |
-| AUD-001 | Toda aprovação/recusa de solicitação de atualização de cadastro deve ser registrada em trilha de auditoria, identificando autor (RH/Comissão), data/hora e decisão | REQ-AUD-001 |
+| PRIV-002 | Retenção (Q-016): dados pessoais do servidor são mantidos somente enquanto houver vínculo ativo com o MPMS. Ao encerramento do vínculo, os dados pessoais são excluídos; os registros da trilha de auditoria que os referenciam são anonimizados (não removidos), preservando data/hora, decisão e autor institucional sem PII | REQ-PRIV-002 |
+| AUD-001 | Toda aprovação/recusa de solicitação de atualização de cadastro deve ser registrada em trilha de auditoria, identificando autor (RH/Comissão), data/hora e decisão. Os registros são preservados após o encerramento do vínculo do servidor, de forma anonimizada quanto à PII do servidor desligado (PRIV-002) | REQ-AUD-001 |
 | AUD-002 | Todo acesso de leitura ao perfil de um servidor por outro usuário deve ser registrado em log de acesso a dados sensíveis | REQ-PRIV-001 |
 
 ## Dados e integrações
@@ -116,13 +118,13 @@ Nenhuma integração externa é necessária para esta funcionalidade além da au
 | Tipo | Dependência | Impacto | Situação |
 |---|---|---|---|
 | Integração | Provedor de SSO institucional (Active Directory) | Necessário para autenticação de todos os usuários | Pendente de credenciais/acesso (ver backlog) |
-| Negócio | Política de retenção/exclusão de dados LGPD (Q-016) | Define regras de retenção e exclusão do perfil | Pendente de decisão humana |
+| Negócio | Política de retenção/exclusão de dados LGPD (Q-016) | Define regras de retenção e exclusão do perfil | Resolvida em 2026-09-01 — retenção enquanto vínculo ativo; exclusão dos dados pessoais e anonimização da auditoria ao encerrar o vínculo (ver PRIV-002) |
 
 ## Questões em aberto
 
 | ID | Pergunta | Impacto | Status |
 |---|---|---|---|
-| Q-016 | Qual o prazo de retenção de dados pessoais do servidor e existe processo de exclusão/anonimização ao deixar o quadro do MPMS? | Define regra de retenção/exclusão de DATA-001 | Aberta |
+| — | Nenhuma. Q-016 resolvida em 2026-09-01 (ver `docs/specs/OPEN-QUESTIONS.md`). | — | — |
 
 ## Rastreabilidade de origem
 
@@ -139,3 +141,6 @@ Nenhuma integração externa é necessária para esta funcionalidade além da au
 | Data | Alteração | Motivo | Responsável |
 |---|---|---|---|
 | 2026-08-27 | Criação inicial | Extração de requisitos de origem (RF-001 a RF-004, RF-015) | Agente |
+| 2026-09-01 | Incorporação da decisão Q-016 (retenção/exclusão LGPD): PRIV-002, ajuste de AUD-001, escopo e dependências; status Draft → Review Required | Decisão humana (sessão de planejamento) | Agente |
+| 2026-09-01 | Spec aprovada; status Review Required → Approved. Pronta para implementação (ver `docs/specs/backend/PLANO-DE-IMPLEMENTACAO.md`) | Decisão humana | Agente |
+| 2026-09-01 | Implementação da Fase 1: entidades `Servidor`/`Lotacao`/`ExperienciaProfissional`/`ParticipacaoComissao`/`SolicitacaoAtualizacaoCadastro`, migration `V2`, endpoints OP-001..OP-005 + encerramento de vínculo (Q-016), RN-001/RN-002/SEC-002, AUD-001/AUD-002. 23 testes. Decisões de modelagem: identidade por `sub`, modelo misto, foto `bytea`, roteamento de validação configurável vazio | Sessão de implementação | Agente |
