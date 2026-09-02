@@ -2,20 +2,20 @@
 
 ## Situação
 
-- Última atualização: 2026-09-01
+- Última atualização: 2026-09-02
 - As 5 specs de frontend foram **aprovadas pelo usuário** em 2026-09-01 (status `Aprovada`).
 - As specs de backend correlatas permanecem `Draft` e **ainda não publicaram contratos de API** (endpoints, schemas de request/response, modelo de dados). Isso não bloqueia o planejamento, mas bloqueia a implementação das camadas de dados de cada feature (ver "Bloqueios" abaixo).
-- Questões em aberto Q-012 a Q-016 permanecem registradas em `../OPEN-QUESTIONS.md`; as que afetam decisão de UI estão anotadas por feature.
+- 2026-09-02: Q-012, Q-013, Q-014, Q-015 e Q-017 respondidas (ver `../OPEN-QUESTIONS.md` › Decisões respondidas). Resta apenas **Q-016** (retenção/exclusão LGPD), que afeta FE-0001 e FE-0005.
 
 ## Specs
 
 | Ordem | ID | Funcionalidade | Status | Mockup | Dependência funcional | Bloqueio de implementação | Próxima ação |
 |---:|---|---|---|---|---|---|---|
 | 1 | 0001 | Perfil e Cadastro do Servidor | Aprovada | Sincronizada | — | ⛔ BE-0001 (contrato + modelo de dados do perfil) | Detalhar contrato com o time de backend; iniciar tarefas não bloqueadas (F0, T1.5/T1.6/T1.8) |
-| 2 | 0002 | Cursos e Certificados | Aprovada | Sincronizada | 0001 | ⛔ BE-0002 (contrato + upload de certificado); Q-012, Q-014 | Aguardar BE-0001; confirmar Q-012 (mensagem RN-005) e Q-014 (origem "requisito do cargo") |
-| 3 | 0003 | Busca de Talentos | Aprovada | Sincronizada | 0001, 0002 | ⛔ BE-0003 (contrato de busca + % de correspondência); Q-013 | Confirmar fórmula do % (Q-013) para exibição/ordenação corretas |
+| 2 | 0002 | Cursos e Certificados | Aprovada | Sincronizada | 0001 | ⛔ BE-0002 (contrato + upload de certificado) | Aguardar BE-0001/BE-0002. Q-012 e Q-014 respondidas (2026-09-02) |
+| 3 | 0003 | Busca de Talentos | Aprovada | Sincronizada | 0001, 0002 | ⛔ BE-0003 (contrato de busca + % de correspondência) | Aguardar BE-0003. Q-013 respondida (2026-09-02): proporção simples, peso igual |
 | 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | Aprovada | Sincronizada | 0002 | ⛔ BE-0004 (contrato de solicitação de benefício) | Aguardar BE-0002 |
-| 5 | 0005 | Permuta de Lotação | Aprovada | Sincronizada | 0001 | ⛔ BE-0005 (contrato do fluxo de permuta); Q-015 | Confirmar Q-015 (exposição de dados na aba pública) — é gate de UI |
+| 5 | 0005 | Permuta de Lotação | Aprovada | Sincronizada | 0001 | ⛔ BE-0005 (contrato do fluxo de permuta); ❓ Q-016 | Q-015 respondida (2026-09-02): aba pública só com lotação/cidade de origem e destino |
 
 ## Regra de execução
 
@@ -71,28 +71,28 @@ Aberto: `❓ Q-016` (retenção/exclusão LGPD — pode exigir ação de exporta
 
 ## FE-0002 — Cursos e Certificados
 
-Rota: `/(portal)/cursos`. Dep.: FE-0001. Aberto: `❓ Q-012` (mensagem RN-005), `❓ Q-014` (origem "requisito do cargo").
+Rota: `/(portal)/cursos`. Dep.: FE-0001. Decidido (2026-09-02): Q-012 — aviso da RN-005 oferece **apenas progressão** com texto explicando a omissão da qualificação; Q-014 — "requisito do cargo" vem de cadastro por cargo mantido pelo RH.
 
 - [ ] **T2.1 — Interfaces/enums** `⛔ BE-0002` — `CursoFormacaoAcademica`, `CursoCapacitacao`, `StatusVerificacao` (`PENDENTE_VERIFICACAO | VALIDADO | RECUSADO`), `StatusUtilizacao` (formação: 5 valores; capacitação: 2 valores — RN-003/RN-004).
-- [ ] **T2.2 — Schema Zod de cadastro de formação** `⛔ BE-0002 / ❓ Q-014` — área de formação, nível, nome do curso, ano início, ano fim, quantidade de horas, utilização; **certificado obrigatório** (RN-001).
+- [ ] **T2.2 — Schema Zod de cadastro de formação** `⛔ BE-0002` — área de formação, nível, nome do curso, ano início, ano fim, quantidade de horas, utilização; **certificado obrigatório** (RN-001). Q-014 respondida: "requisito do cargo" é derivado do cadastro por cargo (RH), não é campo do formulário.
 - [ ] **T2.3 — Schema Zod de cadastro de capacitação** `⛔ BE-0002` — certificado obrigatório; utilização restrita a progressão (RN-009).
 - [ ] **T2.4 — Upload de certificado** `⛔ BE-0002` — Componente de upload (PrimeReact/shared-ui), validação de obrigatoriedade e tipo/tamanho; sem `dangerouslySetInnerHTML`.
 - [ ] **T2.5 — `service/cursos.service.ts`** `⛔ BE-0002` — cadastrar/listar/atualizar curso; anexar certificado.
 - [ ] **T2.6 — Lista de cursos com status** `▶ livre (visual)` — Card/lista exibindo status de verificação como subtítulo ("Pendente de verificação" até validação — RN-002).
 - [ ] **T2.7 — Visibilidade do status de utilização** `⛔ BE-0002` — Exibir status de utilização **apenas** ao próprio servidor e ao RH (RN-003); depende de `usePermissao` (F0.4).
-- [ ] **T2.8 — Oferta condicional de uso (RN-005)** `❓ Q-012` — Ao cadastrar formação não-requisito e não utilizada, oferecer progressão/qualificação; qualificação só se não houver outra formação de mesmo nível já usada. Mensagem pendente de Q-012.
+- [ ] **T2.8 — Oferta condicional de uso (RN-005)** `⛔ BE-0002` — Ao cadastrar formação não-requisito e não utilizada, oferecer progressão/qualificação; qualificação só se não houver outra formação de mesmo nível já usada. Q-012 respondida: quando houver formação de mesmo nível já usada como requisito/qualificação, exibir **apenas** a oferta de progressão + texto curto explicando por que a qualificação não está disponível.
 - [ ] **T2.9 — Estados + testes** `▶ livre / ⛔ parcial` — loading/vazio/erro/sucesso; testes de schema (válido/ inválido/ certificado ausente) e do fluxo RN-005.
 
 ---
 
 ## FE-0003 — Busca de Talentos
 
-Rota: `/(portal)/busca`. Dep.: FE-0001, FE-0002. Aberto: `❓ Q-013` (fórmula do % de correspondência).
+Rota: `/(portal)/busca`. Dep.: FE-0001, FE-0002. Decidido (2026-09-02): Q-013 — % de correspondência é proporção simples (filtros atendidos ÷ total selecionado), peso igual entre todos os tipos de filtro.
 
 - [ ] **T3.1 — Interfaces** `⛔ BE-0003` — `FiltroBusca` (formação área/nível, curso, competências, lotação, idiomas — seleção múltipla), `ResultadoBusca` (servidor + % de correspondência).
 - [ ] **T3.2 — Painel de filtros** `▶ livre (visual)` — Multi-select por filtro (PrimeReact/shared-ui); layout responsivo do `DESIGN.md`.
 - [ ] **T3.3 — `service/busca.service.ts`** `⛔ BE-0003` — Executar busca com filtros; resposta ≤ 3s (RNF-001, responsabilidade do backend).
-- [ ] **T3.4 — Lista de resultados** `⛔ BE-0003 / ❓ Q-013` — Exibir % de correspondência quando >1 filtro; **ocultar 0%** (RN-013).
+- [ ] **T3.4 — Lista de resultados** `⛔ BE-0003` — Exibir % de correspondência quando >1 filtro; **ocultar 0%** (RN-013). Q-013 respondida: % = filtros atendidos ÷ total de filtros selecionados (peso igual).
 - [ ] **T3.5 — Ordenação** `▶ livre` — Correspondência / Lotação / Alfabético / Nível de Formação; última ordenação = critério principal, anterior = secundário (RN-014).
 - [ ] **T3.6 — Abertura do currículo** `⛔ BE-0001` — Ícone de lupa abre `perfil/[id]` em modo leitura (reusa T1.11).
 - [ ] **T3.7 — Estados + testes** `▶ livre / ⛔ parcial` — loading/vazio (nenhum resultado)/erro; testes de ordenação principal/secundária.
@@ -114,12 +114,12 @@ Rota: `/(portal)/beneficios`. Dep.: FE-0002. Aberto: `❓ Q-016`.
 
 ## FE-0005 — Permuta de Lotação
 
-Rota: `/(portal)/permutas`. Dep.: FE-0001. Aberto: `❓ Q-015` (exposição de dados na aba pública — **gate de UI**), `❓ Q-016`.
+Rota: `/(portal)/permutas`. Dep.: FE-0001. Decidido (2026-09-02): Q-015 — a aba pública mostra **apenas lotação/cidade de origem e destino**, sem identidade do solicitante até o aceite mútuo. Aberto: `❓ Q-016` (retenção/exclusão LGPD).
 
 - [ ] **T5.1 — Interfaces/enums** `⛔ BE-0005` — `SolicitacaoPermuta`, estados do fluxo (`AGUARDANDO_ACEITE_USUARIO | AGUARDANDO_APROVACAO_CHEFIA | AGUARDANDO_VALIDACAO_RH | APROVADA | RECUSADA`).
 - [ ] **T5.2 — Formulário de solicitação** `⛔ BE-0005` — Seleção de lotação ou cidade desejada.
 - [ ] **T5.3 — `service/permutas.service.ts`** `⛔ BE-0005` — Criar solicitação; aceitar/recusar; consultar aba pública.
 - [ ] **T5.4 — Aba "Solicitações" (minhas)** `⛔ BE-0005` — Status em todas as etapas do fluxo FB-003; ações contextuais (aceitar/confirmar/recusar) conforme estado.
-- [ ] **T5.5 — Aba pública "Permutas"** `⛔ BE-0005 / ❓ Q-015` — Lista de permutas em aberto visível a todos. Nível de exposição de identidade pendente de Q-015.
+- [ ] **T5.5 — Aba pública "Permutas"** `⛔ BE-0005` — Lista de permutas em aberto visível a todos. Q-015 respondida: exibir **somente lotação/cidade de origem e destino**; sem nome ou identificação do solicitante até o aceite mútuo.
 - [ ] **T5.6 — Regras de UI do fluxo** `⛔ BE-0005` — Refletir RN-010 (bloqueio 180 dias), RN-011 (não re-solicitar permuta recusada pelo próprio), RN-012 (não reaceitar) — desabilitando/ocultando ações; proteção real é server-side.
 - [ ] **T5.7 — Estados + testes** `▶ livre / ⛔ parcial` — loading/vazio/erro/sucesso; testes de renderização por estado do fluxo.
