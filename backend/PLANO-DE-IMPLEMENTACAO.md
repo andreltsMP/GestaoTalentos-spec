@@ -248,11 +248,33 @@ Entregáveis:
 
 ---
 
-## Fase 6 — Adaptadores Turmalina (BLOQUEADA)
+## Fase 6 — Adaptadores Turmalina (fatia ii) + filas de pendência
 
-Pré-condição: contrato técnico do Turmalina + novo ADR (substitui ADR 0001).
+> **Progresso (2026-09-02): implementada.** `mvn test` = **84 testes verdes**; app sobe
+> em dev com `turmalina.enabled=false` (mantém `NotificadorTurmalinaInerte`).
+>
+> **Q-017** foi respondida (contrato **provisório**): novo **[ADR 0002](../../adr/0002-integracao-turmalina-provisoria.md)**
+> substitui o ADR 0001. Entregue:
+> - `NotificadorTurmalinaRest` (`@ConditionalOnProperty turmalina.enabled=true`): `RestClient`
+>   síncrono, token de conta de serviço via *client credentials* no Keycloak
+>   (`TurmalinaTokenProvider`, cacheado), header `Idempotency-Key` determinístico,
+>   `Retry` programático (Resilience4j, 3 tentativas + *backoff*, só 5xx/timeout), timeout 5s.
+> - Falha após tentativas → auditoria `FALHA_INTEGRACAO` (novo tipo) + log; **não** reverte
+>   a aprovação (ADR 0002).
+> - Endpoints/payloads **provisórios** (`POST /api/beneficios-concedidos`, `POST /api/permutas-aprovadas`).
+> - Config por ambiente: `turmalina.*` + `spring`/oauth em `application-hml.yml` e
+>   `application-prod.yml` (`enabled: true`); `TURMALINA_*` em `.env.example`. Dev/teste: inerte.
+> - Testes: `NotificadorTurmalinaRestTest` (sucesso + falha→auditoria) via `MockRestServiceServer`.
+>
+> **Q-019** (BE-0004): `GET /api/v1/beneficios/solicitacoes/pendentes` — fila do RH
+> (solicitações `AGUARDANDO_VALIDACAO`), papel RH.
+>
+> **Q-020** (BE-0005): `GET /api/v1/permutas/pendentes-chefia` (permutas em aprovação de
+> chefia sob responsabilidade do usuário e ainda sem decisão) e
+> `GET /api/v1/permutas/pendentes-rh` (permutas em validação do RH).
 
-Entregáveis (quando destravar): implementação real de `NotificadorTurmalina` (WebClient/RestTemplate conforme decisão), Resilience4j (circuit breaker + retry + timeout), idempotência, `application-*.yml` com URL/credencial por ambiente via env var, testes de fallback/recuperação, `turmalina.enabled=true` em hml/prod.
+Ajuste futuro: quando o contrato **oficial** do Turmalina existir, novo ADR referenciando
+o 0002 e ajuste localizado de endpoints/payloads/auth em `NotificadorTurmalinaRest`.
 
 ---
 
