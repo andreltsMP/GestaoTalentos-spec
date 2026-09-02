@@ -7,7 +7,7 @@
 - As specs de backend BE-0001 a BE-0005 foram **aprovadas** (2026-09-01) e **implementadas localmente** pelo agente de backend (BE-0001..0003 completas; BE-0004/0005 fatia (i) — domínio + porta Turmalina inerte). Ver `../backend/PLANO-DE-IMPLEMENTACAO.md`.
 - **Contrato de API — resolvido pela opção (b) (2026-09-02).** Fonte = OpenAPI vivo do backend (`${NEXT_PUBLIC_API_BASE_URL}/v3/api-docs`, base dev `http://localhost:8080/api/gestao-talento`). Snapshot derivado do código-fonte (`GestaoTalento-backend@defcbbe`) em **`../../contracts/backend-api.md`**; regeneração do JSON via `npm run openapi:fetch` (`scripts/fetch-openapi.mjs`) com o backend no ar. `src/interfaces/*` e schemas Zod passam a ser derivados desse contrato — **a camada de dados de FE-0001/0002/0003 está desbloqueada**. Divergência contrato × tela → registrar em `../OPEN-QUESTIONS.md`, não improvisar.
 - **Questões abertas: nenhuma.** Q-012 a Q-016 resolvidas pelo backend em 2026-09-01; Q-017 (contrato da integração Turmalina) resolvida em 2026-09-02 — contrato provisório REST síncrono, ação pendente do agente de backend (fatia ii de BE-0004/0005; o frontend nunca fala com o Turmalina); Q-018 (cor de fundo de FE-0001) resolvida — segue o `DESIGN.md` `#f7f4ed`. Ver `../OPEN-QUESTIONS.md` › Decisões respondidas.
-- **Progresso 2026-09-02:** **Fase 0 ✅** · **FE-0001 ✅** (T1.1–T1.14) · **FE-0002 ✅** (T2.1–T2.10) · **FE-0003 ✅** (T3.1–T3.7: painel de filtros `Chips`/`MultiSelect`, `buscarServidores`, lista com % e lupa→`/perfil/[id]`, ordenação principal/secundária RN-014, estados). **Próximo:** FE-0004 (Benefícios).
+- **Progresso 2026-09-02:** **Fase 0 ✅** · **FE-0001 ✅** · **FE-0002 ✅** (T2.1–T2.10) · **FE-0003 ✅** (T3.1–T3.7) · **FE-0004 ✅** (T4.1–T4.6: elegibilidade RN-007/EXC-001, solicitar qualificação/progressão, acompanhamento). Pendente T4.7 (tela de decisão do RH — fora da lista original). **Próximo:** FE-0005 (Permuta de Lotação).
 - **✅ Verificação (2026-09-02):** `npx tsc --noEmit` OK · `npm run lint` OK (0 erros; 1 warning pré-existente em `error.tsx`) · `npm test` 20/20 em 5 suítes · `npm run build` OK (rotas `/`, `/login`, `/perfil`, `/api/auth/[...]`, middleware). Fase 0 e FE-0001 T1.1–T1.4 verificadas.
 
 ## Specs
@@ -17,7 +17,7 @@
 | 1 | 0001 | Perfil e Cadastro do Servidor | **Implementada** | Sincronizada | — | — | ✅ T1.1–T1.14 (tsc/lint/jest 25/25/build verdes). Falta: verificação e2e contra o backend rodando |
 | 2 | 0002 | Cursos e Certificados | **Implementada** | Sincronizada | 0001 | — | ✅ T2.1–T2.10 (tsc/lint/jest 33/build verdes). Falta: verificação e2e contra o backend |
 | 3 | 0003 | Busca de Talentos | **Implementada** | Sincronizada | 0001, 0002 | — | ✅ T3.1–T3.7 (tsc/lint/jest 38/build verdes). Falta: verificação e2e contra o backend |
-| 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | Aprovada | Sincronizada | 0002 | ✅ contrato (BE-0004) | Depois de FE-0002. Turmalina (Q-017) é fatia (ii) do backend — não bloqueia o FE |
+| 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | **Implementada** | Sincronizada | 0002 | — | ✅ T4.1–T4.6 (tsc/lint/jest 48/build). Falta T4.7 (decisão do RH); e2e contra o backend |
 | 5 | 0005 | Permuta de Lotação | Aprovada | Sincronizada | 0001 | ✅ contrato (BE-0005) | Depois de FE-0001. Aba pública `GET /permutas/abertas` é anônima; identidade só após aceite mútuo |
 
 ## Regra de execução
@@ -112,12 +112,15 @@ Contrato: `docs/contracts/backend-api.md` › BE-0003.
 
 Rota: `/(portal)/beneficios`. Dep.: FE-0002. Sem questão aberta que afete o FE (Q-016 resolvida; Q-017/Turmalina é interno ao backend). Endpoints BE-0004: `POST /api/v1/beneficios/solicitacoes`, `POST /api/v1/beneficios/solicitacoes/{id}/decisao`.
 
-- [ ] **T4.1 — Interfaces/enums** `⛔ BE-0004` — `SolicitacaoBeneficio`, `TipoBeneficio` (`QUALIFICACAO | PROGRESSAO`), status (`AGUARDANDO | APROVADA | RECUSADA`).
-- [ ] **T4.2 — Seleção de curso elegível** `⛔ BE-0004` — Só cursos validados com status "Não utilizado para qualificação/progressão" (RN-007); impedir envio com curso já utilizado (EXC-001).
-- [ ] **T4.3 — `service/beneficios.service.ts`** `⛔ BE-0004` — Criar/listar/acompanhar solicitação.
-- [ ] **T4.4 — Tela de solicitação** `⛔ BE-0004` — Formulário vinculado ao curso; desabilitar submit durante envio; impedir submissão duplicada.
-- [ ] **T4.5 — Acompanhamento de status** `⛔ BE-0004` — Lista com status e histórico.
-- [ ] **T4.6 — Estados + testes** `▶ livre / ⛔ parcial` — loading/vazio/erro/sucesso; teste de bloqueio EXC-001.
+Contrato: `docs/contracts/backend-api.md` › BE-0004. `status` reusa `StatusSolicitacao` (AGUARDANDO_VALIDACAO/APROVADA/RECUSADA) e `StatusSolicitacaoBadge`.
+
+- [x] **T4.1 — Interfaces/enums** — `interfaces/Beneficio.ts` (`SolicitarBeneficioRequest`, `SolicitacaoBeneficio`, `DecisaoBeneficioRequest`) + `enums/TipoBeneficioEnum.ts` (`QUALIFICACAO`/`PROGRESSAO` + rótulos).
+- [x] **T4.2 — Seleção de curso elegível** — `components/beneficios/elegibilidade.ts` `elegibilidadeBeneficio(curso, utilizacao, solicitacoes)`: só `VALIDADO`; qualificação só formação, não utilizada, **não requisito do cargo**; progressão se não utilizada; **bloqueia se já há solicitação `AGUARDANDO_VALIDACAO` para o mesmo curso+tipo** (RN-007 / EXC-001 / anti-duplicidade).
+- [x] **T4.3 — `service/beneficio.service.ts` + `actions/beneficio.actions.ts`** — `listarSolicitacoesBeneficio` (Zod) + `solicitarBeneficio` (`POST`, 201) + `revalidatePath('/beneficios')`.
+- [x] **T4.4 — Tela de solicitação** — `CursoElegivel`: botões "Solicitar Qualificação"/"Solicitar Progressão" (texto explícito, ≥40px — A11Y-001) só quando elegível; `useTransition` desabilita durante o envio; duplicidade prevenida pela elegibilidade. Vinculado ao curso via `cursoId`.
+- [x] **T4.5 — Acompanhamento de status** — `MinhasSolicitacoesBeneficio`: "TipoBenefício — cursoNome" + `StatusSolicitacaoBadge`; motivo exibido em `RECUSADA` (UI-003 / CA-FE-002).
+- [x] **T4.6 — Estados + testes** — carregando (`app/loading.tsx`), vazio (`EmptyState`), erro (`ErrorState`), sucesso (toast + `router.refresh`). `tests/components/beneficios/Beneficios.test.tsx`: elegibilidade (validado/pendente/utilizado/requisito/capacitação/**duplicidade EXC-001**), `CursoElegivel` ações vs "não elegível", acompanhamento. **Verificado:** tsc/lint/jest 48/build OK.
+- [ ] **T4.7 — Tela de decisão do RH** — **não implementada** (fora da lista T4.1–T4.6; análoga a T2.10). Endpoint `POST /api/v1/beneficios/solicitacoes/{id}/decisao`. Depende de `usePermissao` real.
 
 ---
 
