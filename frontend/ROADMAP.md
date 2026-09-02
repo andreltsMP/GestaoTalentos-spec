@@ -5,23 +5,24 @@
 - Última atualização: 2026-09-02
 - As 5 specs de frontend foram **aprovadas pelo usuário** em 2026-09-01 (status `Aprovada`).
 - As specs de backend BE-0001 a BE-0005 foram **aprovadas** (2026-09-01) e **implementadas localmente** pelo agente de backend (BE-0001..0003 completas; BE-0004/0005 fatia (i) — domínio + porta Turmalina inerte). Ver `../backend/PLANO-DE-IMPLEMENTACAO.md`.
-- **Bloqueio remanescente da camada de dados do frontend:** não há **contrato de API consumível** publicado — os `../backend/*/spec.md` não ganharam seção de endpoints + schemas de request/response + modelo de dados, e não há OpenAPI versionado em `docs/specs/`. Os endpoints estão listados (só caminho + propósito) no `PLANO-DE-IMPLEMENTACAO.md`; o restante está apenas no código-fonte do backend. Fonte a definir: (a) backend commitar OpenAPI/contrato em `../backend/`; (b) consumir `/v3/api-docs` do backend local; (c) derivar do PLANO + código (frágil).
-- **Questões abertas:** Q-012 a Q-016 **resolvidas** pelo backend em 2026-09-01 (ver `../OPEN-QUESTIONS.md` › Decisões respondidas) — nenhuma bloqueia o frontend. Q-017 passou a ser o **contrato técnico da integração Turmalina** (só backend, fatia (ii) de BE-0004/0005 — o frontend nunca fala com o Turmalina). A divergência de cor de fundo de FE-0001 é agora **Q-018** (resolvida: segue o `DESIGN.md` `#f7f4ed`).
+- **Contrato de API — resolvido pela opção (b) (2026-09-02).** Fonte = OpenAPI vivo do backend (`${NEXT_PUBLIC_API_BASE_URL}/v3/api-docs`, base dev `http://localhost:8080/api/gestao-talento`). Snapshot derivado do código-fonte (`GestaoTalento-backend@defcbbe`) em **`../../contracts/backend-api.md`**; regeneração do JSON via `npm run openapi:fetch` (`scripts/fetch-openapi.mjs`) com o backend no ar. `src/interfaces/*` e schemas Zod passam a ser derivados desse contrato — **a camada de dados de FE-0001/0002/0003 está desbloqueada**. Divergência contrato × tela → registrar em `../OPEN-QUESTIONS.md`, não improvisar.
+- **Questões abertas: nenhuma.** Q-012 a Q-016 resolvidas pelo backend em 2026-09-01; Q-017 (contrato da integração Turmalina) resolvida em 2026-09-02 — contrato provisório REST síncrono, ação pendente do agente de backend (fatia ii de BE-0004/0005; o frontend nunca fala com o Turmalina); Q-018 (cor de fundo de FE-0001) resolvida — segue o `DESIGN.md` `#f7f4ed`. Ver `../OPEN-QUESTIONS.md` › Decisões respondidas.
+- **⚠️ Verificação pendente:** `npm install`, `lint`, `typecheck`, `test` e `build` **não foram executados** nesta sessão (sem `node_modules`; registry Verdaccio inalcançável). O código da Fase 0 + T1.1 está escrito seguindo AGENTS.md/`DESIGN.md`, mas nenhuma tarefa está formalmente "concluída" até `lint`/`typecheck`/`test`/`build` verdes num ambiente com acesso ao Verdaccio.
 
 ## Specs
 
 | Ordem | ID | Funcionalidade | Status | Mockup | Dependência funcional | Bloqueio de implementação | Próxima ação |
 |---:|---|---|---|---|---|---|---|
-| 1 | 0001 | Perfil e Cadastro do Servidor | Aprovada | Sincronizada | — | ⛔ contrato consumível de BE-0001 (spec Approved + implementada; falta OpenAPI/schemas) | Obter o contrato (OpenAPI ou `/v3/api-docs`); então T1.1/T1.3/T1.4. Tarefas `▶ livre` (F0, T1.5/T1.6/T1.8) já podem seguir |
-| 2 | 0002 | Cursos e Certificados | Aprovada | Sincronizada | 0001 | ⛔ contrato consumível de BE-0002 (inclui upload de certificado — `bytea`/base64) | Obter contrato; Q-012 e Q-014 já resolvidas (backend, 2026-09-01) |
-| 3 | 0003 | Busca de Talentos | Aprovada | Sincronizada | 0001, 0002 | ⛔ contrato consumível de BE-0003 (`POST /api/v1/busca/servidores`) | Obter contrato; Q-013 já resolvida: `% = tipos atendidos ÷ tipos selecionados × 100`, omitir 0% |
-| 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | Aprovada | Sincronizada | 0002 | ⛔ contrato consumível de BE-0004 | Obter contrato. Turmalina (Q-017) é fatia (ii) do backend — não bloqueia o FE |
-| 5 | 0005 | Permuta de Lotação | Aprovada | Sincronizada | 0001 | ⛔ contrato consumível de BE-0005 | Obter contrato. Q-015 resolvida: aba pública anônima até aceite mútuo. Turmalina não bloqueia o FE |
+| 1 | 0001 | Perfil e Cadastro do Servidor | Aprovada | Sincronizada | — | ✅ contrato em `contracts/backend-api.md` (BE-0001) | Fazer F0.1/F0.3/F0.5/F0.6/F0.7; então T1.1→T1.4 e T1.7→T1.12 a partir do contrato |
+| 2 | 0002 | Cursos e Certificados | Aprovada | Sincronizada | 0001 | ✅ contrato (BE-0002; certificado = base64 em `CertificadoUploadDto`) | Depois de FE-0001. Q-012/Q-014 resolvidas |
+| 3 | 0003 | Busca de Talentos | Aprovada | Sincronizada | 0001, 0002 | ✅ contrato (BE-0003; `POST /api/v1/busca/servidores`) | Depois de FE-0001/0002. `percentualCorrespondencia` nulo com ≤1 filtro; item com 0% não vem |
+| 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | Aprovada | Sincronizada | 0002 | ✅ contrato (BE-0004) | Depois de FE-0002. Turmalina (Q-017) é fatia (ii) do backend — não bloqueia o FE |
+| 5 | 0005 | Permuta de Lotação | Aprovada | Sincronizada | 0001 | ✅ contrato (BE-0005) | Depois de FE-0001. Aba pública `GET /permutas/abertas` é anônima; identidade só após aceite mútuo |
 
 ## Regra de execução
 
 - Implementar na ordem apresentada, respeitando as dependências funcionais.
-- Tarefas marcadas `⛔ BE-000X` só entram em implementação após o **contrato de API consumível** de BE-000X (endpoints + schemas de request/response + modelo de dados, como OpenAPI versionado ou seção na `spec.md`) estar disponível. A spec BE já estar `Approved` e implementada **não** basta enquanto o contrato não for consumível sem inventar formato.
+- O contrato de API (endpoints + schemas + enums + formato de erro) está em `../../contracts/backend-api.md`, derivado do OpenAPI vivo do backend (opção b). As tarefas antes marcadas `⛔ BE-000X` estão **desbloqueadas** — implementá-las a partir desse contrato, sem inventar campos; se o contrato divergir do que a tela precisa, registrar em `../OPEN-QUESTIONS.md`.
 - Tarefas marcadas `▶ livre` podem ser implementadas imediatamente (dependem apenas de mockup + `DESIGN.md`).
 - Nenhuma feature é considerada concluída sem: critérios de aceite da spec atendidos, estados (loading/vazio/erro/sem permissão/sucesso), acessibilidade do `DESIGN.md`, testes, e `lint`/`typecheck`/`build` verdes.
 - `docs/specs/backend/` é somente leitura para este agente.
@@ -29,20 +30,20 @@
 ## Legenda
 
 - `▶ livre` — sem bloqueio; pode começar já.
-- `⛔ BE-000X` — bloqueado pelo contrato de API **consumível** do backend indicado (spec pode já estar `Approved`/implementada, mas sem endpoints+schemas consumíveis em `docs/specs/`).
-- `❓ Q-0XX` — depende de resposta a questão em aberto (Q-012 a Q-016 já resolvidas; Q-017 é backend-only; Q-018 resolvida).
+- `⛔ BE-000X` — **histórico**: era bloqueio pelo contrato de API de BE-000X. Resolvido em 2026-09-02 via opção (b) — contrato em `../../contracts/backend-api.md`. Ler como "implementar a partir do contrato de BE-000X".
+- `❓ Q-0XX` — depende de resposta a questão em aberto (Q-012 a Q-016 resolvidas; Q-017 é backend-only; Q-018 resolvida). Nenhuma questão aberta bloqueia o frontend.
 
 ---
 
 ## Fase 0 — Fundação (transversal, precede as features)
 
-- [ ] **F0.1 — Shell da aplicação** `❓ shared-ui` — Header (70px, friso `#337259`) + Sidebar (250px) conforme `DESIGN.md`, com os 5 itens de navegação do mockup (Meu Perfil, Busca de Talentos, Cursos e Certificados, Qualificação/Progressão, Permuta de Lotação). Depende de confirmar se o `BaseLayout` do `@mpms/shared-ui` já fornece esse shell; substituir/adaptar `Header.tsx`/`Sidebar.tsx`/`PortalMenu.tsx` genéricos (hoje com `style={{}}` inline, proibido).
+- [~] **F0.1 — Shell da aplicação** `❓ shared-ui` — **Parcial (2026-09-02):** `Sidebar.tsx` com os 5 itens de navegação + estado ativo (`usePathname`); `Header.tsx` e `Sidebar.tsx` sem `style={{}}` inline (só PrimeFlex); `PortalMenu.tsx` (código morto) removido; `ToastProvider` no `(portal)/layout.tsx`. **Falta:** cromo exato do `DESIGN.md` (header 70px + friso `#337259`, sidebar 250px, fundo cream) — depende do que o `BaseLayout`/`app.css` do `@mpms/shared-ui` fornece (`❓ shared-ui`).
 - [x] **F0.2 — Rebrand** `▶ livre` — Feito em `layout.tsx` (metadata), `package.json` (`name`), `login/page.tsx` e texto de marca do `Header.tsx`. Nav e estrutura do shell (Sidebar/menu) seguem para F0.1.
-- [ ] **F0.3 — Componentes de estado** `▶ livre` — `src/components/shared/`: `LoadingState`, `EmptyState` (border-dashed border-2, ícone `text-4xl`), `ErrorState` (sem stack trace), `SemPermissao`.
+- [x] **F0.3 — Componentes de estado** `▶ livre` — `src/components/shared/`: `LoadingState`, `EmptyState` (border-dashed border-2, ícone `text-4xl`, slot `acao`), `ErrorState` (sem stack trace, slot `acao`), `SemPermissao`. Teste `tests/components/shared/EstadosUi.test.tsx`. (Verificação lint/typecheck/test pendente — ver Situação.)
 - [ ] **F0.4 — Hook `usePermissao`** `⛔ permissionamento` — Consumir o microsserviço `_git/permissionamento` (AGENTS.md). Depende do contrato desse serviço.
-- [ ] **F0.5 — Toast centralizado** `▶ livre` — Provider de `Toast` (PrimeReact) em `src/service/`, mensagens em português, para feedback de escrita.
-- [ ] **F0.6 — Remoção do scaffold `Pessoa`** `▶ livre` — Remover `(portal)/cadastros/`, `PessoaForm`, `PessoaTable`, `pessoaActions`, `interfaces/Pessoa.ts` e testes correlatos após F0.1/F0.2 (é código de exemplo do template).
-- [ ] **F0.7 — Ajuste do `middleware.ts`** `▶ livre` — Atualizar o `matcher` para as rotas reais do portal (`/perfil`, `/busca`, `/cursos`, `/beneficios`, `/permutas`) no lugar de `/dashboard` e `/cadastros`.
+- [x] **F0.5 — Toast centralizado** `▶ livre` — `src/service/toast/ToastProvider.tsx` (client, PrimeReact `Toast`, context) + `src/hooks/useToast.ts` (`sucesso/erro/aviso/info`, PT-BR). Montado no `(portal)/layout.tsx`.
+- [x] **F0.6 — Remoção do scaffold `Pessoa`** `▶ livre` — Removidos `(portal)/cadastros/`, `(portal)/dashboard/`, `PessoaForm`, `PessoaTable`, `pessoaActions`, `interfaces/Pessoa.ts`, `enums/StatusProcesso.ts`, `PortalMenu.tsx` e `tests/service/pessoaActions.test.ts`. Mantidos `ApiService.ts`, `usePessoaLogada.ts`, `interfaces/ApiResponse.ts` (infra reutilizável).
+- [x] **F0.7 — Ajuste do `middleware.ts`** `▶ livre` — `matcher` → `/perfil`, `/busca`, `/cursos`, `/beneficios`, `/permutas`. `page.tsx` redireciona para `/perfil`; `login` usa `callbackUrl: '/perfil'`; criada rota `(portal)/perfil/page.tsx` (placeholder — corpo real em T1.10).
 
 ---
 
@@ -52,7 +53,7 @@ Rotas: `/(portal)/perfil` (próprio), `/(portal)/perfil/[id]` (leitura, origem: 
 Q-016 resolvida (backend, 2026-09-01): retenção enquanto vínculo ativo; no encerramento, exclusão de PII + anonimização de auditoria, tratada server-side por BE-0001 — sem tela adicional no FE por ora.
 Endpoints BE-0001 (do `PLANO-DE-IMPLEMENTACAO.md`, sujeitos a contrato formal): `GET`/`PATCH /api/v1/servidores/me`, `POST /api/v1/servidores/me/solicitacoes`, `POST /api/v1/solicitacoes/{id}/decisao`, `GET /api/v1/servidores/{id}`, `GET /api/v1/servidores/{id}/foto`. Perfil criado sob demanda no 1º `GET /me`; `idiomas`/`competencias` = listas; `experiencias`/`participacoesComissao` = subentidades; foto `bytea` transportada em base64; nenhum campo do perfil exige validação hoje (mapa de roteamento vazio).
 
-- [ ] **T1.1 — `interfaces/Perfil.ts`** `⛔ BE-0001` — `Perfil`, `Lotacao`, `Idioma`, `Competencia`, `Experiencia`, `Comissao`, `SolicitacaoAtualizacao`. Campos de cada seção dependem do modelo de dados do BE-0001.
+- [x] **T1.1 — `interfaces/Perfil.ts`** — Criado a partir do contrato: `Perfil`, `Lotacao`, `ExperienciaProfissional`, `ParticipacaoComissao`, `AtualizarPerfilRequest`, `SolicitacaoAtualizacao`, `ValidadorCadastro`, `CriarSolicitacaoRequest`, `DecisaoSolicitacaoRequest`. **Divergência do texto original:** `idiomas` e `competencias` são `string[]` (não entidades `Idioma`/`Competencia`) — o contrato manda.
 - [x] **T1.2 — `enums/StatusSolicitacaoEnum.ts`** `▶ livre` — `AguardandoValidacao | Aprovada | Recusada`.
 - [ ] **T1.3 — Schemas Zod por seção** `⛔ BE-0001` — idioma, competência, experiência, comissão (campos pendentes de contrato).
 - [ ] **T1.4 — `service/perfil.service.ts` + actions** `⛔ BE-0001` — `getPerfilProprio`, `getPerfilPorId`, `adicionarItemSecao`, `enviarParaValidacao`, `listarSolicitacoes`. Validar resposta com Zod.
