@@ -4,23 +4,24 @@
 
 - Última atualização: 2026-09-02
 - As 5 specs de frontend foram **aprovadas pelo usuário** em 2026-09-01 (status `Aprovada`).
-- As specs de backend correlatas permanecem `Draft` e **ainda não publicaram contratos de API** (endpoints, schemas de request/response, modelo de dados). Isso não bloqueia o planejamento, mas bloqueia a implementação das camadas de dados de cada feature (ver "Bloqueios" abaixo).
-- 2026-09-02: Q-012, Q-013, Q-014, Q-015 e Q-017 respondidas (ver `../OPEN-QUESTIONS.md` › Decisões respondidas). Resta apenas **Q-016** (retenção/exclusão LGPD), que afeta FE-0001 e FE-0005.
+- As specs de backend BE-0001 a BE-0005 foram **aprovadas** (2026-09-01) e **implementadas localmente** pelo agente de backend (BE-0001..0003 completas; BE-0004/0005 fatia (i) — domínio + porta Turmalina inerte). Ver `../backend/PLANO-DE-IMPLEMENTACAO.md`.
+- **Bloqueio remanescente da camada de dados do frontend:** não há **contrato de API consumível** publicado — os `../backend/*/spec.md` não ganharam seção de endpoints + schemas de request/response + modelo de dados, e não há OpenAPI versionado em `docs/specs/`. Os endpoints estão listados (só caminho + propósito) no `PLANO-DE-IMPLEMENTACAO.md`; o restante está apenas no código-fonte do backend. Fonte a definir: (a) backend commitar OpenAPI/contrato em `../backend/`; (b) consumir `/v3/api-docs` do backend local; (c) derivar do PLANO + código (frágil).
+- **Questões abertas:** Q-012 a Q-016 **resolvidas** pelo backend em 2026-09-01 (ver `../OPEN-QUESTIONS.md` › Decisões respondidas) — nenhuma bloqueia o frontend. Q-017 passou a ser o **contrato técnico da integração Turmalina** (só backend, fatia (ii) de BE-0004/0005 — o frontend nunca fala com o Turmalina). A divergência de cor de fundo de FE-0001 é agora **Q-018** (resolvida: segue o `DESIGN.md` `#f7f4ed`).
 
 ## Specs
 
 | Ordem | ID | Funcionalidade | Status | Mockup | Dependência funcional | Bloqueio de implementação | Próxima ação |
 |---:|---|---|---|---|---|---|---|
-| 1 | 0001 | Perfil e Cadastro do Servidor | Aprovada | Sincronizada | — | ⛔ BE-0001 (contrato + modelo de dados do perfil) | Detalhar contrato com o time de backend; iniciar tarefas não bloqueadas (F0, T1.5/T1.6/T1.8) |
-| 2 | 0002 | Cursos e Certificados | Aprovada | Sincronizada | 0001 | ⛔ BE-0002 (contrato + upload de certificado) | Aguardar BE-0001/BE-0002. Q-012 e Q-014 respondidas (2026-09-02) |
-| 3 | 0003 | Busca de Talentos | Aprovada | Sincronizada | 0001, 0002 | ⛔ BE-0003 (contrato de busca + % de correspondência) | Aguardar BE-0003. Q-013 respondida (2026-09-02): proporção simples, peso igual |
-| 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | Aprovada | Sincronizada | 0002 | ⛔ BE-0004 (contrato de solicitação de benefício) | Aguardar BE-0002 |
-| 5 | 0005 | Permuta de Lotação | Aprovada | Sincronizada | 0001 | ⛔ BE-0005 (contrato do fluxo de permuta); ❓ Q-016 | Q-015 respondida (2026-09-02): aba pública só com lotação/cidade de origem e destino |
+| 1 | 0001 | Perfil e Cadastro do Servidor | Aprovada | Sincronizada | — | ⛔ contrato consumível de BE-0001 (spec Approved + implementada; falta OpenAPI/schemas) | Obter o contrato (OpenAPI ou `/v3/api-docs`); então T1.1/T1.3/T1.4. Tarefas `▶ livre` (F0, T1.5/T1.6/T1.8) já podem seguir |
+| 2 | 0002 | Cursos e Certificados | Aprovada | Sincronizada | 0001 | ⛔ contrato consumível de BE-0002 (inclui upload de certificado — `bytea`/base64) | Obter contrato; Q-012 e Q-014 já resolvidas (backend, 2026-09-01) |
+| 3 | 0003 | Busca de Talentos | Aprovada | Sincronizada | 0001, 0002 | ⛔ contrato consumível de BE-0003 (`POST /api/v1/busca/servidores`) | Obter contrato; Q-013 já resolvida: `% = tipos atendidos ÷ tipos selecionados × 100`, omitir 0% |
+| 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | Aprovada | Sincronizada | 0002 | ⛔ contrato consumível de BE-0004 | Obter contrato. Turmalina (Q-017) é fatia (ii) do backend — não bloqueia o FE |
+| 5 | 0005 | Permuta de Lotação | Aprovada | Sincronizada | 0001 | ⛔ contrato consumível de BE-0005 | Obter contrato. Q-015 resolvida: aba pública anônima até aceite mútuo. Turmalina não bloqueia o FE |
 
 ## Regra de execução
 
 - Implementar na ordem apresentada, respeitando as dependências funcionais.
-- Tarefas marcadas `⛔ BE-000X` só entram em implementação após o contrato de API correspondente estar publicado e revisado.
+- Tarefas marcadas `⛔ BE-000X` só entram em implementação após o **contrato de API consumível** de BE-000X (endpoints + schemas de request/response + modelo de dados, como OpenAPI versionado ou seção na `spec.md`) estar disponível. A spec BE já estar `Approved` e implementada **não** basta enquanto o contrato não for consumível sem inventar formato.
 - Tarefas marcadas `▶ livre` podem ser implementadas imediatamente (dependem apenas de mockup + `DESIGN.md`).
 - Nenhuma feature é considerada concluída sem: critérios de aceite da spec atendidos, estados (loading/vazio/erro/sem permissão/sucesso), acessibilidade do `DESIGN.md`, testes, e `lint`/`typecheck`/`build` verdes.
 - `docs/specs/backend/` é somente leitura para este agente.
@@ -28,8 +29,8 @@
 ## Legenda
 
 - `▶ livre` — sem bloqueio; pode começar já.
-- `⛔ BE-000X` — bloqueado pelo contrato de API do backend indicado.
-- `❓ Q-0XX` — depende de resposta a questão em aberto.
+- `⛔ BE-000X` — bloqueado pelo contrato de API **consumível** do backend indicado (spec pode já estar `Approved`/implementada, mas sem endpoints+schemas consumíveis em `docs/specs/`).
+- `❓ Q-0XX` — depende de resposta a questão em aberto (Q-012 a Q-016 já resolvidas; Q-017 é backend-only; Q-018 resolvida).
 
 ---
 
@@ -48,7 +49,8 @@
 ## FE-0001 — Perfil e Cadastro do Servidor
 
 Rotas: `/(portal)/perfil` (próprio), `/(portal)/perfil/[id]` (leitura, origem: busca 0003).
-Aberto: `❓ Q-016` (retenção/exclusão LGPD — pode exigir ação de exportação/exclusão de dados).
+Q-016 resolvida (backend, 2026-09-01): retenção enquanto vínculo ativo; no encerramento, exclusão de PII + anonimização de auditoria, tratada server-side por BE-0001 — sem tela adicional no FE por ora.
+Endpoints BE-0001 (do `PLANO-DE-IMPLEMENTACAO.md`, sujeitos a contrato formal): `GET`/`PATCH /api/v1/servidores/me`, `POST /api/v1/servidores/me/solicitacoes`, `POST /api/v1/solicitacoes/{id}/decisao`, `GET /api/v1/servidores/{id}`, `GET /api/v1/servidores/{id}/foto`. Perfil criado sob demanda no 1º `GET /me`; `idiomas`/`competencias` = listas; `experiencias`/`participacoesComissao` = subentidades; foto `bytea` transportada em base64; nenhum campo do perfil exige validação hoje (mapa de roteamento vazio).
 
 - [ ] **T1.1 — `interfaces/Perfil.ts`** `⛔ BE-0001` — `Perfil`, `Lotacao`, `Idioma`, `Competencia`, `Experiencia`, `Comissao`, `SolicitacaoAtualizacao`. Campos de cada seção dependem do modelo de dados do BE-0001.
 - [x] **T1.2 — `enums/StatusSolicitacaoEnum.ts`** `▶ livre` — `AguardandoValidacao | Aprovada | Recusada`.
@@ -63,7 +65,7 @@ Aberto: `❓ Q-016` (retenção/exclusão LGPD — pode exigir ação de exporta
 - [ ] **T1.11 — Página `perfil/[id]/page.tsx`** `⛔ BE-0001` — Modo leitura, sem controles de edição; estado "sem permissão" ao tentar editar terceiro (UI-005, REQ-SEC-001).
 - [ ] **T1.12 — Bloqueio de edição de item "aguardando validação"** `⛔ BE-0001` — Fluxo de erro da spec: impedir edição direta, exibir aviso, preservar solicitação em andamento.
 - [ ] **T1.13 — Testes** `▶ livre / ⛔ parcial` — RTL: "+" adiciona item sem navegação; render dos 3 status; modo leitura sem "+". Casos que tocam service dependem de T1.4.
-- [x] **T1.14 — Divergência mockup × `DESIGN.md`** `▶ livre` — Registrada como Q-017 em `../OPEN-QUESTIONS.md`; implementação segue `#f7f4ed` do `DESIGN.md`.
+- [x] **T1.14 — Divergência mockup × `DESIGN.md`** `▶ livre` — Registrada como **Q-018** em `../OPEN-QUESTIONS.md` (renumerada da ex-Q-017, que o backend reatribuiu à integração Turmalina); implementação segue `#f7f4ed` do `DESIGN.md`.
 
 **Critérios de aceite (spec):** CA-FE-001 (perfil consolidado), CA-FE-002 ("+" inline sem navegação), CA-FE-003 (3 status na aba de solicitações), CA-FE-004 (mockup sincronizada + `DESIGN.md`).
 
@@ -101,7 +103,7 @@ Rota: `/(portal)/busca`. Dep.: FE-0001, FE-0002. Decidido (2026-09-02): Q-013 �
 
 ## FE-0004 — Benefícios (Adicional de Qualificação e Progressão Funcional)
 
-Rota: `/(portal)/beneficios`. Dep.: FE-0002. Aberto: `❓ Q-016`.
+Rota: `/(portal)/beneficios`. Dep.: FE-0002. Sem questão aberta que afete o FE (Q-016 resolvida; Q-017/Turmalina é interno ao backend). Endpoints BE-0004: `POST /api/v1/beneficios/solicitacoes`, `POST /api/v1/beneficios/solicitacoes/{id}/decisao`.
 
 - [ ] **T4.1 — Interfaces/enums** `⛔ BE-0004` — `SolicitacaoBeneficio`, `TipoBeneficio` (`QUALIFICACAO | PROGRESSAO`), status (`AGUARDANDO | APROVADA | RECUSADA`).
 - [ ] **T4.2 — Seleção de curso elegível** `⛔ BE-0004` — Só cursos validados com status "Não utilizado para qualificação/progressão" (RN-007); impedir envio com curso já utilizado (EXC-001).
@@ -114,7 +116,7 @@ Rota: `/(portal)/beneficios`. Dep.: FE-0002. Aberto: `❓ Q-016`.
 
 ## FE-0005 — Permuta de Lotação
 
-Rota: `/(portal)/permutas`. Dep.: FE-0001. Decidido (2026-09-02): Q-015 — a aba pública mostra **apenas lotação/cidade de origem e destino**, sem identidade do solicitante até o aceite mútuo. Aberto: `❓ Q-016` (retenção/exclusão LGPD).
+Rota: `/(portal)/permutas`. Dep.: FE-0001. Q-015 resolvida (backend, 2026-09-01): a aba pública (`GET /api/v1/permutas/abertas`) é **anônima** — só lotação/cidade origem-destino + status; identidade só a partir de `AGUARDANDO_APROVACAO_CHEFIA` (aceite mútuo confirmado). Q-016 resolvida; Q-017/Turmalina é interno ao backend.
 
 - [ ] **T5.1 — Interfaces/enums** `⛔ BE-0005` — `SolicitacaoPermuta`, estados do fluxo (`AGUARDANDO_ACEITE_USUARIO | AGUARDANDO_APROVACAO_CHEFIA | AGUARDANDO_VALIDACAO_RH | APROVADA | RECUSADA`).
 - [ ] **T5.2 — Formulário de solicitação** `⛔ BE-0005` — Seleção de lotação ou cidade desejada.

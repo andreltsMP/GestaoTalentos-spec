@@ -4,13 +4,13 @@
 
 - ID funcional: 0005
 - Contexto: Backend
-- Status: Draft
+- Status: Approved (entrega em 2 fatias — ver ADR 0001)
 - Criado em: 2026-08-27
-- Última atualização: 2026-08-27
+- Última atualização: 2026-09-01 (aprovada)
 - Fonte principal: `requirements/main_requirements.md`
 - Artefatos complementares: `requirements/artifacts/Gestao de Talentos.docx`
 - Spec frontend relacionada: `specs/frontend/0005-permuta-de-lotacao/spec.md`
-- Questões em aberto: Q-015, Q-016
+- Questões em aberto: Q-017 (contrato de integração com o Turmalina) — bloqueia apenas a fatia (ii); ver `docs/adr/0001-integracao-turmalina.md`
 - Responsável pela revisão: Comissão de Gestão de Competências
 
 ## Resumo
@@ -24,7 +24,7 @@ Garantir a integridade do fluxo de estados da permuta, impedindo transições in
 ## Escopo incluído
 
 - Criação de solicitação de permuta a partir da lotação/cidade desejada pelo servidor inicial.
-- Listagem pública de permutas em aberto.
+- Listagem pública de permutas em aberto, anônima até o aceite mútuo: expõe apenas lotação/cidade de origem e destino, sem identidade dos servidores (Q-015).
 - Aceite entre servidores (servidor aceitante → confirmação do servidor inicial).
 - Aprovação das chefias diretas de ambos os servidores.
 - Validação final do RH.
@@ -50,7 +50,7 @@ Garantir a integridade do fluxo de estados da permuta, impedindo transições in
 | ID | Requisito | Origem |
 |---|---|---|
 | RF-001 | O sistema deve permitir que o servidor inicie uma solicitação de permuta selecionando lotação ou cidade desejada | REQ-FUNC-010 |
-| RF-002 | O sistema deve listar publicamente as permutas em aberto para todos os servidores | REQ-FUNC-011 |
+| RF-002 | O sistema deve listar publicamente as permutas em aberto para todos os servidores, retornando apenas lotação/cidade de origem e destino e o status; a identidade dos servidores envolvidos não é exposta antes do aceite mútuo confirmado (Q-015) | REQ-FUNC-011 |
 | RF-003 | O sistema deve permitir que outro servidor aceite uma permuta em aberto, sujeitando-a à confirmação do servidor inicial | REQ-FUNC-010 |
 | RF-004 | Com o aceite mútuo confirmado, o sistema deve avançar a solicitação para "Aguardando aprovação de chefia" e enviá-la às chefias diretas de ambos os servidores | REQ-FUNC-010 |
 | RF-005 | O sistema deve avançar a solicitação para "Aguardando validação do RH" somente quando ambas as chefias aprovarem | REQ-FUNC-010 |
@@ -66,6 +66,7 @@ Garantir a integridade do fluxo de estados da permuta, impedindo transições in
 | RN-003 | Se apenas uma chefia recusar, a solicitação do servidor aceitante fica "Recusada" (sem possibilidade de reaceite) e a do servidor inicial retorna para "Aguardando aceite de usuário" | REQ-RN-012 |
 | RN-004 | Um servidor que recusou uma permuta não pode solicitar novamente a mesma permuta | REQ-RN-011 |
 | RN-005 | A comunicação ao Turmalina ocorre somente após a validação final do RH, nunca antes | REQ-INT-001 |
+| RN-006 | A identidade dos servidores (nome, matrícula ou qualquer PII) só é revelada às partes após a confirmação do aceite mútuo; até lá, a permuta é tratada como anônima na listagem pública, expondo apenas lotação/cidade de origem e destino (Q-015) | REQ-PRIV-002 |
 
 ## Segurança, privacidade e auditoria
 
@@ -73,8 +74,9 @@ Garantir a integridade do fluxo de estados da permuta, impedindo transições in
 |---|---|---|
 | SEC-001 | Autenticação exclusiva via SSO institucional | REQ-SEC-001 |
 | SEC-002 | Apenas a chefia direta responsável pode aprovar/recusar a permuta do servidor sob sua lotação; apenas RH pode dar a validação final | REQ-FUNC-010 |
-| PRIV-001 | Dados de permuta devem ser tratados em conformidade com a LGPD; nível de exposição na listagem pública pendente de decisão (Q-015) | REQ-PRIV-002 |
-| AUD-001 | Toda decisão (aceite, aprovação de chefia, validação do RH) deve ser registrada em trilha de auditoria (autor, data/hora, decisão) | REQ-AUD-001 |
+| PRIV-001 | Dados de permuta devem ser tratados em conformidade com a LGPD. Exposição na listagem pública restrita a lotação/cidade de origem e destino; identidade das partes revelada apenas após o aceite mútuo confirmado (Q-015, RN-006) | REQ-PRIV-002 |
+| PRIV-002 | Retenção (Q-016): a solicitação de permuta é mantida enquanto ao menos um dos servidores envolvidos tiver vínculo ativo com o MPMS. Ao encerramento do vínculo, os dados pessoais são excluídos; os registros da trilha de auditoria correlatos são anonimizados (não removidos), preservando data/hora, decisão e autor institucional sem PII | REQ-PRIV-002 |
+| AUD-001 | Toda decisão (aceite, aprovação de chefia, validação do RH) deve ser registrada em trilha de auditoria (autor, data/hora, decisão). Os registros são preservados após o encerramento do vínculo do servidor, de forma anonimizada quanto à PII do servidor desligado (PRIV-002) | REQ-AUD-001 |
 
 ## Dados e integrações
 
@@ -82,7 +84,7 @@ Garantir a integridade do fluxo de estados da permuta, impedindo transições in
 
 | ID | Entidade ou dado | Necessidade de negócio | Origem |
 |---|---|---|---|
-| DATA-001 | Solicitação de permuta | Servidor inicial, servidor aceitante, lotação de origem/destino, status, histórico de transições | REQ-FUNC-010 |
+| DATA-001 | Solicitação de permuta | Servidor inicial, servidor aceitante, lotação de origem/destino, status, histórico de transições. A identidade (servidor inicial/aceitante) é dado interno; não integra a projeção pública antes do aceite mútuo (RN-006) | REQ-FUNC-010 |
 | DATA-002 | Bloqueio temporário entre servidores | Par de servidores e data de expiração (180 dias) após dupla recusa de chefia | REQ-RN-010 |
 
 ### Integrações
@@ -122,15 +124,16 @@ Garantir a integridade do fluxo de estados da permuta, impedindo transições in
 | Tipo | Dependência | Impacto | Situação |
 |---|---|---|---|
 | Funcionalidade | Spec backend 0001 (dados de lotação do servidor) | Fonte de dados para lotação de origem/destino | Ativa |
-| Negócio | Nível de exposição de dados na listagem pública (Q-015) | Define quais campos DATA-001 expõe publicamente | Pendente de decisão humana |
-| Integração | Contrato/credenciais de integração com o Turmalina | Necessário para OP-005 | Pendente de preparação técnica (ver backlog) |
+| Negócio | Nível de exposição de dados na listagem pública (Q-015) | Definido em RN-006/PRIV-001: apenas lotação/cidade de origem e destino; identidade só após aceite mútuo | Resolvida em 2026-09-01 |
+| Integração | Contrato/credenciais de integração com o Turmalina | Necessário para a fatia (ii): implementação do adaptador de notificação (OP-005) | Contrato inexistente — ver ADR 0001 e Q-017. Fatia (i) implementa porta `NotificadorTurmalina` inerte |
 
 ## Questões em aberto
 
 | ID | Pergunta | Impacto | Status |
 |---|---|---|---|
-| Q-015 | A listagem pública de permutas deve exibir a identidade do solicitante? | Define os campos retornados por OP-002/RF-002 | Aberta |
-| Q-016 | Qual o prazo de retenção dos dados de permuta? | Define política de retenção de DATA-001 | Aberta |
+| Q-015 | A listagem pública de permutas deve exibir a identidade do solicitante? | Define os campos retornados por OP-002/RF-002 | Resolvida em 2026-09-01 — anônima até o aceite mútuo (RN-006) |
+| Q-016 | Qual o prazo de retenção dos dados de permuta? | Define política de retenção de DATA-001 | Resolvida em 2026-09-01 — ver PRIV-002 |
+| Q-017 | Qual o contrato técnico da integração com o Turmalina? | Bloqueia a fatia (ii) — adaptador de notificação | Aberta — ver `docs/adr/0001-integracao-turmalina.md` |
 
 ## Rastreabilidade de origem
 
@@ -139,6 +142,7 @@ Garantir a integridade do fluxo de estados da permuta, impedindo transições in
 | RF-001 a RF-006 | REQ-FUNC-010 | SRC-MAIN-001, RF-010, Fluxo FB-003, seção 7.1 |
 | RF-002 | REQ-FUNC-011 | SRC-MAIN-001, RF-011 |
 | RN-002 | REQ-RN-010 | SRC-MAIN-001, RN-010 |
+| RN-006, PRIV-002 | REQ-PRIV-002 | SRC-MAIN-001, RES-001; decisões Q-015 e Q-016 |
 | RN-001, RN-004 | REQ-RN-011 | SRC-MAIN-001, RN-011 |
 | RN-003 | REQ-RN-012 | SRC-MAIN-001, RN-012 |
 | RF-007, INT-001 | REQ-INT-001 | SRC-MAIN-001, INT-001 |
@@ -148,3 +152,6 @@ Garantir a integridade do fluxo de estados da permuta, impedindo transições in
 | Data | Alteração | Motivo | Responsável |
 |---|---|---|---|
 | 2026-08-27 | Criação inicial | Extração de requisitos de origem (RF-010, RF-011, RN-010 a RN-012, INT-001) | Agente |
+| 2026-09-01 | Incorporação das decisões Q-015 (listagem pública anônima até aceite mútuo — RN-006, ajuste de RF-002/PRIV-001/DATA-001) e Q-016 (retenção/exclusão LGPD — PRIV-002, ajuste de AUD-001). Mantém status Draft por pendência técnica do contrato de integração com o Turmalina (INT-001) | Decisão humana (sessão de planejamento) | Agente |
+| 2026-09-01 | Spec aprovada; status Draft → Approved com entrega em 2 fatias (ADR 0001): (i) domínio + porta `NotificadorTurmalina` inerte; (ii) adaptador quando houver contrato (Q-017) | Decisão humana | Agente |
+| 2026-09-02 | Implementação da fatia (i): `SolicitacaoPermuta` (uma por servidor inicial, recicla), `BloqueioPermutaPar` (RN-010) e `BloqueioReenvioPermuta` (180d), migration `V5`, máquina de estados OP-001..005, chefia por papel `CHEFIA` + mesma lotação (SEC-002), listagem pública anônima (Q-015/RN-006), notificação via porta `NotificadorTurmalina` inerte após validação do RH (RN-005), auditoria de todas as decisões (AUD-001). Fatia (ii) segue bloqueada por Q-017. 17 testes (79 no total) | Sessão de implementação | Agente |
