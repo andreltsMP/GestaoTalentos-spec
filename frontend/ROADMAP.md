@@ -9,7 +9,12 @@
 - **Questões abertas: nenhuma.** Q-012 a Q-016 resolvidas pelo backend em 2026-09-01; Q-017 (contrato da integração Turmalina) resolvida em 2026-09-02 — contrato provisório REST síncrono, ação pendente do agente de backend (fatia ii de BE-0004/0005; o frontend nunca fala com o Turmalina); Q-018 (cor de fundo de FE-0001) resolvida — segue o `DESIGN.md` `#f7f4ed`. Ver `../OPEN-QUESTIONS.md` › Decisões respondidas.
 - **Progresso 2026-09-02:** **Fase 0 ✅** · **FE-0001 ✅** · **FE-0002 ✅** (T2.1–T2.10) · **FE-0003 ✅** (T3.1–T3.7) · **FE-0004 ✅** (T4.1–T4.6) · **FE-0005 ✅** (T5.1–T5.7: nova permuta, aba pública anônima Q-015, "minhas" com stepper FB-003 + confirmar/recusar aceite). **Todas as 5 specs de frontend têm o lado do servidor implementado e verificado** (`jest` 55, `build` verde).
 - **Telas de papéis administrativos implementadas** (`usePermissao` ainda stub — gate real é o 403 server-side): FE-0002 T2.10 (Comissão) · FE-0004 T4.7 (RH — benefício) · FE-0005 T5.8 (Chefia/RH — permuta). **Q-019 / Q-020** registram que BE-0004/BE-0005 não expõem endpoints de fila de pendentes para RH/Chefia — as telas filtram por status o que o `GET` disponível retorna e ficam plenamente funcionais quando esses endpoints existirem.
-- **✅ Verificação (2026-09-02):** `npx tsc --noEmit` OK · `npm run lint` OK (0 erros; 1 warning pré-existente em `error.tsx`) · `npm test` 20/20 em 5 suítes · `npm run build` OK (rotas `/`, `/login`, `/perfil`, `/api/auth/[...]`, middleware). Fase 0 e FE-0001 T1.1–T1.4 verificadas.
+- **✅ Verificação estática (2026-09-02):** `tsc --noEmit` OK · `lint` OK (0 erros; 1 warning pré-existente em `error.tsx`) · `jest` **58/58** (12 suítes) · `build` OK (14 rotas).
+- **✅ Verificação e2e (2026-09-02)** contra o backend rodando em `localhost:8080`:
+  - `/actuator/health` → 200; `npm run openapi:fetch` → `docs/contracts/openapi.json` (28 rotas). O OpenAPI vivo **bate campo a campo** com `src/interfaces/*` e schemas Zod (endpoints, DTOs, enums) — contrato confirmado.
+  - Todos os endpoints retornam **401 sem token** (wiring OK; guarda de auth OK).
+  - Frontend (`next start`): `/login` 200 e renderiza; `/perfil` → 307 para `/login?callbackUrl=…` (middleware OK).
+  - **Não exercido:** fluxo autenticado ponta a ponta (login → CRUD) — exige Keycloak (`keycloak-dev.mpms.mp.br`, rede MPMS / P3 do PLANO).
 
 ## Specs
 
