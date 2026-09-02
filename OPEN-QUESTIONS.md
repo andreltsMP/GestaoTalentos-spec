@@ -11,7 +11,8 @@
 
 | ID | Pergunta | Fonte e contexto | Impacto | Contexto afetado | Specs | Criticidade | Status |
 |---|---|---|---|---|---|---|---|
-| — | Nenhuma questão em aberto no momento. Q-017 respondida em 2026-09-02 (ver "Decisões respondidas"). | — | — | — | — | — | — |
+| Q-019 | O BE-0004 não expõe endpoint para o **RH listar solicitações de benefício pendentes de decisão**: `GET /api/v1/beneficios/solicitacoes` retorna apenas as do próprio usuário logado (`findByServidorId`). O `POST /{id}/decisao` (papel RH) age por `id`, mas não há como descobrir os `id` pendentes. | Descoberto ao implementar FE-0004 T4.7 (tela de decisão do RH). O agente de frontend não inventa endpoint. | A tela `/beneficios/decisao` fica funcional só quando existir a fila do RH. | Backend | BE-0004 | Média | Aberta — relayar ao agente de backend (criar `GET /beneficios/solicitacoes/pendentes` ou tornar o `GET` ciente de papel) |
+| Q-020 | O BE-0005 não expõe endpoint para **Chefia/RH listarem permutas pendentes da sua decisão**: `GET /api/v1/permutas/minhas` só retorna permutas onde o usuário é `servidorInicial` ou `servidorAceitante`; `GET /abertas` só `AGUARDANDO_ACEITE_USUARIO`. `POST /{id}/aprovacao-chefia` e `/{id}/validacao-rh` agem por `id`. | Descoberto ao implementar FE-0005 T5.8 (telas de chefia e RH). | A tela `/permutas/decisao` fica funcional só quando existirem as filas de chefia e RH. | Backend | BE-0005 | Média | Aberta — relayar ao agente de backend (criar `GET /permutas/pendentes-chefia` e `GET /permutas/pendentes-rh`) |
 
 ## Decisões respondidas
 
