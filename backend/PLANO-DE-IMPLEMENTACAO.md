@@ -206,6 +206,32 @@ Entregáveis:
 
 Depende de: Fase 1. **INT-001 bloqueado → ADR 0001.** Critérios: CA-BE-001..005.
 
+> **Progresso (2026-09-02): fatia (i) implementada.** `mvn test` = **79 testes verdes**;
+> Flyway aplica `V5` (`solicitacao_permuta`, `permuta_servidor_vetado`,
+> `bloqueio_permuta_par`, `bloqueio_reenvio_permuta`); endpoints `/api/v1/permutas/**`
+> respondem 401 sem token; app sobe.
+>
+> Decisões (2026-09-02): **uma** `SolicitacaoPermuta` do servidor inicial que recicla
+> para `AGUARDANDO_ACEITE_USUARIO` quando o par falha (recusa da confirmação ou de uma
+> só chefia), vetando o aceitante; chefia = **papel `CHEFIA` + mesma lotação** da parte
+> (SEC-002); bloqueio de reenvio por **origem + destino** para o servidor recusado pela
+> própria chefia (180 dias), além do bloqueio de par (RN-010).
+>
+> - Máquina de estados: `AGUARDANDO_ACEITE_USUARIO` → `AGUARDANDO_CONFIRMACAO_INICIAL`
+>   → `AGUARDANDO_APROVACAO_CHEFIA` → `AGUARDANDO_VALIDACAO_RH` → `APROVADA`/`RECUSADA`.
+> - RN-010 (dupla recusa de chefia → `RECUSADA` + `bloqueio_permuta_par` 180d + rota),
+>   RN-011/RN-012 (veto de reaceite por servidor), RN-003 da spec (recusa de uma
+>   chefia → reabre para novo aceite).
+> - Listagem pública `GET /permutas/abertas` **anônima** (Q-015 / RN-006); identidade
+>   nas respostas só a partir de `AGUARDANDO_APROVACAO_CHEFIA` (aceite mútuo confirmado).
+> - `NotificadorTurmalina.notificarPermutaAprovada` (porta inerte) só após validação
+>   final do RH (RN-005 / CA-BE-004). Toda decisão gera auditoria (AUD-001 / CA-BE-005).
+>
+> Interpretações registradas: se a chefia do próprio servidor inicial recusar, a spec
+> (RN-003) manda reabrir a permuta do inicial — a implementação honra isso e ainda
+> aplica o bloqueio de rota ao inicial; RH que recusa não gera bloqueio de 180 dias
+> (a spec só bloqueia na dupla recusa de chefia).
+
 Entregáveis:
 
 - **Entidades / migration `V6`**: `SolicitacaoPermuta` (servidor inicial, aceitante, lotação origem/destino, status, histórico de transições), `BloqueioPermuta` (par de servidores, expiração 180 dias).
