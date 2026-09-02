@@ -7,7 +7,7 @@
 - As specs de backend BE-0001 a BE-0005 foram **aprovadas** (2026-09-01) e **implementadas localmente** pelo agente de backend (BE-0001..0003 completas; BE-0004/0005 fatia (i) — domínio + porta Turmalina inerte). Ver `../backend/PLANO-DE-IMPLEMENTACAO.md`.
 - **Contrato de API — resolvido pela opção (b) (2026-09-02).** Fonte = OpenAPI vivo do backend (`${NEXT_PUBLIC_API_BASE_URL}/v3/api-docs`, base dev `http://localhost:8080/api/gestao-talento`). Snapshot derivado do código-fonte (`GestaoTalento-backend@defcbbe`) em **`../../contracts/backend-api.md`**; regeneração do JSON via `npm run openapi:fetch` (`scripts/fetch-openapi.mjs`) com o backend no ar. `src/interfaces/*` e schemas Zod passam a ser derivados desse contrato — **a camada de dados de FE-0001/0002/0003 está desbloqueada**. Divergência contrato × tela → registrar em `../OPEN-QUESTIONS.md`, não improvisar.
 - **Questões abertas: nenhuma.** Q-012 a Q-016 resolvidas pelo backend em 2026-09-01; Q-017 (contrato da integração Turmalina) resolvida em 2026-09-02 — contrato provisório REST síncrono, ação pendente do agente de backend (fatia ii de BE-0004/0005; o frontend nunca fala com o Turmalina); Q-018 (cor de fundo de FE-0001) resolvida — segue o `DESIGN.md` `#f7f4ed`. Ver `../OPEN-QUESTIONS.md` › Decisões respondidas.
-- **Progresso 2026-09-02:** **Fase 0 concluída**. **FE-0001 concluída** (T1.1–T1.14). **FE-0002 concluída** (T2.1–T2.10): servidor (cadastro formação/capacitação, upload de certificado base64, lista com status, oferta RN-005/Q-012) + Comissão (tela de validação `/cursos/validacao`, proxy de certificado, validar/recusar/editar). **Próximo:** FE-0003 (Busca de Talentos).
+- **Progresso 2026-09-02:** **Fase 0 ✅** · **FE-0001 ✅** (T1.1–T1.14) · **FE-0002 ✅** (T2.1–T2.10) · **FE-0003 ✅** (T3.1–T3.7: painel de filtros `Chips`/`MultiSelect`, `buscarServidores`, lista com % e lupa→`/perfil/[id]`, ordenação principal/secundária RN-014, estados). **Próximo:** FE-0004 (Benefícios).
 - **✅ Verificação (2026-09-02):** `npx tsc --noEmit` OK · `npm run lint` OK (0 erros; 1 warning pré-existente em `error.tsx`) · `npm test` 20/20 em 5 suítes · `npm run build` OK (rotas `/`, `/login`, `/perfil`, `/api/auth/[...]`, middleware). Fase 0 e FE-0001 T1.1–T1.4 verificadas.
 
 ## Specs
@@ -16,7 +16,7 @@
 |---:|---|---|---|---|---|---|---|
 | 1 | 0001 | Perfil e Cadastro do Servidor | **Implementada** | Sincronizada | — | — | ✅ T1.1–T1.14 (tsc/lint/jest 25/25/build verdes). Falta: verificação e2e contra o backend rodando |
 | 2 | 0002 | Cursos e Certificados | **Implementada** | Sincronizada | 0001 | — | ✅ T2.1–T2.10 (tsc/lint/jest 33/build verdes). Falta: verificação e2e contra o backend |
-| 3 | 0003 | Busca de Talentos | Aprovada | Sincronizada | 0001, 0002 | ✅ contrato (BE-0003; `POST /api/v1/busca/servidores`) | Depois de FE-0001/0002. `percentualCorrespondencia` nulo com ≤1 filtro; item com 0% não vem |
+| 3 | 0003 | Busca de Talentos | **Implementada** | Sincronizada | 0001, 0002 | — | ✅ T3.1–T3.7 (tsc/lint/jest 38/build verdes). Falta: verificação e2e contra o backend |
 | 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | Aprovada | Sincronizada | 0002 | ✅ contrato (BE-0004) | Depois de FE-0002. Turmalina (Q-017) é fatia (ii) do backend — não bloqueia o FE |
 | 5 | 0005 | Permuta de Lotação | Aprovada | Sincronizada | 0001 | ✅ contrato (BE-0005) | Depois de FE-0001. Aba pública `GET /permutas/abertas` é anônima; identidade só após aceite mútuo |
 
@@ -96,13 +96,15 @@ Contrato: `docs/contracts/backend-api.md` › BE-0002.
 
 Rota: `/(portal)/busca`. Dep.: FE-0001, FE-0002. Decidido (2026-09-02): Q-013 — % de correspondência é proporção simples (filtros atendidos ÷ total selecionado), peso igual entre todos os tipos de filtro.
 
-- [ ] **T3.1 — Interfaces** `⛔ BE-0003` — `FiltroBusca` (formação área/nível, curso, competências, lotação, idiomas — seleção múltipla), `ResultadoBusca` (servidor + % de correspondência).
-- [ ] **T3.2 — Painel de filtros** `▶ livre (visual)` — Multi-select por filtro (PrimeReact/shared-ui); layout responsivo do `DESIGN.md`.
-- [ ] **T3.3 — `service/busca.service.ts`** `⛔ BE-0003` — Executar busca com filtros; resposta ≤ 3s (RNF-001, responsabilidade do backend).
-- [ ] **T3.4 — Lista de resultados** `⛔ BE-0003` — Exibir % de correspondência quando >1 filtro; **ocultar 0%** (RN-013). Q-013 respondida: % = filtros atendidos ÷ total de filtros selecionados (peso igual).
-- [ ] **T3.5 — Ordenação** `▶ livre` — Correspondência / Lotação / Alfabético / Nível de Formação; última ordenação = critério principal, anterior = secundário (RN-014).
-- [ ] **T3.6 — Abertura do currículo** `⛔ BE-0001` — Ícone de lupa abre `perfil/[id]` em modo leitura (reusa T1.11).
-- [ ] **T3.7 — Estados + testes** `▶ livre / ⛔ parcial` — loading/vazio (nenhum resultado)/erro; testes de ordenação principal/secundária.
+Contrato: `docs/contracts/backend-api.md` › BE-0003.
+
+- [x] **T3.1 — Interfaces** — `interfaces/Busca.ts` (`FiltroBusca`, `ResultadoBusca`) + `enums/CriterioOrdenacaoEnum.ts` (+ helper `proximaOrdenacao` — RN-014).
+- [x] **T3.2 — Painel de filtros** — `components/busca/PainelFiltros.tsx`: `Chips` (área, curso, competências, lotação, idiomas — texto multivalorado, `max=50`) + `MultiSelect` (níveis, enum). `<label htmlFor>` associado, grid PrimeFlex responsivo.
+- [x] **T3.3 — `service/actions/busca.actions.ts`** — `buscarServidores(filtro)` → `POST /api/v1/busca/servidores`, resposta validada com `busca.schema.ts`. (É POST por causa do corpo, mas é consulta — sem `revalidatePath`.)
+- [x] **T3.4 — Lista de resultados** — `ListaResultados`/`ItemResultado`: foto (`Avatar` iniciais), nome, nível+lotação, `percentualCorrespondencia` **só quando não nulo**; `filtrarVisiveis` remove 0% (RN-013 — defensivo; backend já omite). Contagem "Resultados (N)".
+- [x] **T3.5 — Ordenação** — `BarraOrdenacao`: 4 critérios; `proximaOrdenacao` coloca a escolha como 1º e a anterior como 2º; troca de critério re-executa a busca com `ordenacao: [principal, secundária]`.
+- [x] **T3.6 — Abertura do currículo** — ícone `pi pi-search-plus` = `<Link href="/perfil/{id}">` (modo leitura, reusa T1.11).
+- [x] **T3.7 — Estados + testes** — inicial (convite), carregando (`LoadingState`), erro (`ErrorState` + "Tentar novamente"), vazio ("Nenhum resultado…"), sucesso. Testes `tests/components/busca/Busca.test.tsx`: `proximaOrdenacao` (CA-FE-003), badge 1º/2º, oculta 0% (CA-FE-002), omite % nulo. **Verificado:** tsc/lint/jest 38/build OK.
 
 ---
 
