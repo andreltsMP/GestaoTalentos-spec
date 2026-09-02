@@ -13,6 +13,8 @@
 
 - Última atualização: 2026-09-02
 - 2026-09-02: merge do subtree `docs/specs/` (progresso do backend) reconciliado pelo agente de frontend. `OPEN-QUESTIONS.md` e este arquivo passam a refletir a versão do backend; status de FE corrigido de `Draft` para `Aprovada` (specs de frontend aprovadas em 2026-09-01). Divergência de cor de fundo de FE-0001 renumerada da antiga Q-017 para **Q-018** (o ID Q-017 é a integração Turmalina).
+- 2026-09-02: Q-017 respondida — contrato **provisório** do Turmalina (REST síncrono, Bearer JWT, `Idempotency-Key`, retry/timeout), exige novo ADR substituindo o ADR 0001; execução da fatia (ii) de BE-0004/BE-0005 é ação pendente do agente de backend. Frontend não é afetado. Não há mais questões em aberto.
+- 2026-09-02: contrato de API do backend adotado pela **opção (b)** — OpenAPI vivo (`/v3/api-docs`); snapshot em `docs/contracts/backend-api.md` (frontend), regen via `npm run openapi:fetch`. Camada de dados de FE-0001/0002/0003 desbloqueada.
 - Fonte principal analisada: `requirements/main_requirements.md` (v0.3.0)
 - Design System analisado: `DESIGN.md`
 - Template visual analisado: `requirements/template_webdesign.html`
@@ -29,5 +31,5 @@
 | 1 | 0001 | Perfil e Cadastro do Servidor | Frontend, Backend | BE: Approved / FE: Aprovada | Sincronizada | Crítica | — | SRC-MAIN-001, SRC-ART-001 | — (Q-016 resolvida 2026-09-01) |
 | 2 | 0002 | Cursos e Certificados (Formação/Capacitação) | Frontend, Backend | BE: Approved / FE: Aprovada | Sincronizada | Crítica | 0001 | SRC-MAIN-001, SRC-ART-001 | — (Q-012, Q-014 resolvidas 2026-09-01) |
 | 3 | 0003 | Busca de Talentos | Frontend, Backend | BE: Approved / FE: Aprovada | Sincronizada | Alta | 0001, 0002 | SRC-MAIN-001, SRC-ART-001 | — (Q-013 resolvida 2026-09-01) |
-| 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | Frontend, Backend | BE: Approved (2 fatias, ADR 0001) / FE: Aprovada | Sincronizada | Alta | 0002 | SRC-MAIN-001, SRC-ART-001 | Q-017 (contrato Turmalina — só fatia ii) |
-| 5 | 0005 | Permuta de Lotação | Frontend, Backend | BE: Approved (2 fatias, ADR 0001) / FE: Aprovada | Sincronizada | Alta | 0001 | SRC-MAIN-001, SRC-ART-001 | Q-017 (contrato Turmalina — só fatia ii) |
+| 4 | 0004 | Benefícios (Qualificação/Progressão Funcional) | Frontend, Backend | BE: Approved (2 fatias, ADR 0001) / FE: Aprovada | Sincronizada | Alta | 0002 | SRC-MAIN-001, SRC-ART-001 | — (Q-017 respondida 2026-09-02: contrato Turmalina provisório; fatia ii pendente no backend) |
+| 5 | 0005 | Permuta de Lotação | Frontend, Backend | BE: Approved (2 fatias, ADR 0001) / FE: Aprovada | Sincronizada | Alta | 0001 | SRC-MAIN-001, SRC-ART-001 | — (Q-017 respondida 2026-09-02: contrato Turmalina provisório; fatia ii pendente no backend) |
