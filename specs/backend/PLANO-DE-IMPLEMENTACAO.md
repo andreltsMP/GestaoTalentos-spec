@@ -1,9 +1,11 @@
 # Plano de Implementação — Backend Gestão de Talento (execução local)
 
-- Data: 2026-09-01
-- Base: specs BE-0001 a BE-0005 **aprovadas**; decisões Q-012 a Q-016 incorporadas; ADR 0001 (Turmalina) em aberto
+- Data: 2026-09-01 (plano) · Última atualização: 2026-09-03
+- Base: specs BE-0001 a BE-0005 **aprovadas**; decisões Q-012 a Q-016 incorporadas; integração Turmalina resolvida por **contrato provisório** — [ADR 0002](../../adr/0002-integracao-turmalina-provisoria.md) substitui o ADR 0001
 - Objetivo: implementar as 5 features na ordem do SDD, mantendo o backend **executável localmente** ao final de cada fase (`docker compose up -d` + `mvn -s .mvn/settings.xml spring-boot:run`).
 - Ferramentas locais já instaladas e validadas: JDK 17 (Temurin), Maven 3.9.9, Docker Desktop, Postgres via `docker-compose.yml`. Build verde (7 testes), app sobe com health `UP`.
+
+> **Situação (2026-09-03): Fases 0 a 6 executadas** (`mvn test` = 84 verdes em 2026-09-02). As 5 features estão implementadas; a integração Turmalina roda sob o contrato provisório do ADR 0002. **Pendências abertas** (transversais, não de feature): P2 permissionamento real (hoje `PermissionChecker` interino + `Papeis.java` com nomes provisórios); P3 Keycloak local + realm export (bloqueia o smoke/e2e autenticado); itens **4** e **7** da Fase 0 (alinhamento `SecurityConfig` × Sidecar; log de acesso a dado sensível PRIV-001/AUD-002); contrato **oficial** do Turmalina (novo ADR referenciando o 0002 + ajuste localizado do `NotificadorTurmalinaRest`).
 
 ---
 
@@ -11,11 +13,11 @@
 
 | # | Item | Situação | Ação |
 |---|---|---|---|
-| P1 | **Migrações de schema** | Não há Flyway/Liquibase; hoje o schema vem de `ddl-auto=update` no perfil `dev` | Adotar **Flyway** (ADR 0002). Migrations versionadas em `src/main/resources/db/migration`. `ddl-auto=validate` em **todos** os perfis (dev inclusive). |
-| P2 | **Autorização via `_git/permissionamento`** | `MicroServiceSidecar 0.0.16` traz só o resource-server OAuth2; não há cliente de permissionamento no classpath | **Bloqueante.** Precisa de: como este serviço chama o permissionamento (lib? endpoint? via Sidecar?), nomes de papéis/claims (Comissão de Gestão de Competências, RH, Servidor, Chefia). Interim: porta `PermissionChecker` com stub local (perfil `dev`) e implementação real depois. |
-| P3 | **Keycloak local para testes manuais** | App aponta para `keycloak-dev.mpms.mp.br` (exige rede MPMS) | Adicionar serviço `keycloak` ao `docker-compose.yml` (somente dev) com *realm export* contendo client + usuários de teste por papel. Alternativa: documentar obtenção de token no Keycloak dev. |
-| P4 | **Integração Turmalina (INT-001)** | Contrato inexistente — ver **ADR 0001** | BE-0004 e BE-0005 entram em **2 fatias**: (i) domínio + porta `NotificadorTurmalina` inerte; (ii) adaptador quando houver contrato (novo ADR). |
-| P5 | **Armazenamento de certificados (BE-0002)** | Spec não define storage (arquivo em disco? S3/MinIO? BLOB no banco?) | Definir antes da Fase 2. Sugestão local: MinIO no compose ou `bytea` no Postgres para o MVP. |
+| P1 | **Migrações de schema** | ✅ **Resolvido.** Flyway adotado (sem ADR dedicado); migrations `V1`–`V5` versionadas em `src/main/resources/db/migration`; `ddl-auto=validate` em todos os perfis; `spring.flyway.enabled=false` em teste | — |
+| P2 | **Autorização via `_git/permissionamento`** | ⏳ **Aberto (bloqueante para produção).** `MicroServiceSidecar 0.0.16` traz só o resource-server OAuth2; sem cliente de permissionamento. Interim em uso: porta `PermissionChecker` + `JwtRolePermissionChecker` (lê `realm_access`/`resource_access`) + stub `DevPermissivePermissionChecker` (`@Profile("dev")`); `Papeis.java` com nomes provisórios | Obter da infra: lib/endpoint de chamada ao permissionamento e nomes reais de papéis/claims (Comissão de Gestão de Competências, RH, Servidor, Chefia); substituir o interino |
+| P3 | **Keycloak local para testes manuais** | ⏳ **Aberto.** App aponta para `keycloak-dev.mpms.mp.br` (exige rede MPMS); bloqueia o smoke/e2e autenticado local | Adicionar serviço `keycloak` ao `docker-compose.yml` (somente dev) com *realm export* (client + usuários de teste por papel). Alternativa: documentar obtenção de token no Keycloak dev |
+| P4 | **Integração Turmalina (INT-001)** | ✅ **Resolvido por contrato provisório** — [ADR 0002](../../adr/0002-integracao-turmalina-provisoria.md) (substitui o ADR 0001). Fatia (i) na Fase 4/5; fatia (ii) `NotificadorTurmalinaRest` na Fase 6 | Quando o contrato **oficial** existir: novo ADR referenciando o 0002 + ajuste localizado de endpoints/payloads/auth |
+| P5 | **Armazenamento de certificados (BE-0002)** | ✅ **Resolvido.** `bytea` no Postgres, transporte em base64 (como a foto do perfil da Fase 1) | — |
 
 ---
 
