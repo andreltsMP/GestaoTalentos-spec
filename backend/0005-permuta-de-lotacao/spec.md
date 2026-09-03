@@ -4,9 +4,9 @@
 
 - ID funcional: 0005
 - Contexto: Backend
-- Status: Approved (entrega em 2 fatias — ver ADR 0001)
+- Status: Implementado (fatias i+ii — ver ADR 0001 e ADR 0002)
 - Criado em: 2026-08-27
-- Última atualização: 2026-09-01 (aprovada)
+- Última atualização: 2026-09-02 (fatia ii implementada — Fase 6)
 - Fonte principal: `requirements/main_requirements.md`
 - Artefatos complementares: `requirements/artifacts/Gestao de Talentos.docx`
 - Spec frontend relacionada: `specs/frontend/0005-permuta-de-lotacao/spec.md`
@@ -125,7 +125,7 @@ Garantir a integridade do fluxo de estados da permuta, impedindo transições in
 |---|---|---|---|
 | Funcionalidade | Spec backend 0001 (dados de lotação do servidor) | Fonte de dados para lotação de origem/destino | Ativa |
 | Negócio | Nível de exposição de dados na listagem pública (Q-015) | Definido em RN-006/PRIV-001: apenas lotação/cidade de origem e destino; identidade só após aceite mútuo | Resolvida em 2026-09-01 |
-| Integração | Contrato/credenciais de integração com o Turmalina | Necessário para a fatia (ii): implementação do adaptador de notificação (OP-005) | Contrato inexistente — ver ADR 0001 e Q-017. Fatia (i) implementa porta `NotificadorTurmalina` inerte |
+| Integração | Contrato/credenciais de integração com o Turmalina | Necessário para a fatia (ii): implementação do adaptador de notificação (OP-005) | Resolvido por contrato **provisório** (Q-017 / ADR 0002, substitui o ADR 0001). Fatia (ii) implementada na Fase 6: `NotificadorTurmalina.notificarPermutaAprovada` via `NotificadorTurmalinaRest`. Aguarda contrato **oficial** para ajuste localizado |
 
 ## Questões em aberto
 
